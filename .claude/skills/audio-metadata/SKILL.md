@@ -126,3 +126,21 @@ strictest value of each row.
 - Logging is chatty (java.util.logging) — tone it down in the adapter.
 - Later formats it already covers: FLAC (Vorbis comments + PICTURE block), M4A/MP4 (iTunes atoms: `©nam`, `aART`,
   `trkn`, `covr`, `cpil`), OGG. Map them in adapters; core stays format-neutral.
+
+## MP4 video metadata (movies, TV episodes)
+iTunes-style atoms in `moov/udta/meta/ilst`:
+| Domain field | Atom | Notes |
+|---|---|---|
+| title | `©nam` | movie title or episode title |
+| year / release date | `©day` | `YYYY` or ISO date |
+| genre | `©gen` | text |
+| description | `desc` / `ldes` | short / long |
+| media kind | `stik` | 9 = Movie, 10 = TV Show |
+| show | `tvsh` | |
+| season | `tvsn` | integer |
+| episode | `tves` | integer |
+| episode ID | `tven` | e.g. `S01E02` |
+| poster | `covr` | JPEG/PNG |
+- Large files: writing atoms may require rewriting/moving the `moov` atom; since we always write to a copy, do it as
+  part of the copy (stream, never load the file into memory). Prefer putting `moov` before `mdat` (fast start).
+- Plex/Jellyfin/Kodi mostly rely on **file/folder names**, not atoms → the output naming matters as much as the tags.

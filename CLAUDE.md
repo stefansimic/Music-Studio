@@ -1,7 +1,8 @@
 # Music-Studio
 
-Java tool for organizing a music library for playback on other devices (car stereo, phone, MP3 player):
-writing tags (ID3), genres, cover art, and file/folder structure. A music player is a secondary feature.
+Java tool for organizing a music library for playback on other devices (car stereo, phone, MP3 player, PC):
+writing tags (ID3), genres, cover art, and file/folder structure. Later also MP4 videos (movies, TV episodes).
+A media player with a library is a secondary feature.
 
 ## Tech stack
 - Java 25 (LTS) on GraalVM JDK, Maven multi-module build
@@ -24,7 +25,7 @@ Rules:
 - Frontends contain no business logic: they parse input, call a use case, render the result.
   Anything the CLI can do the GUI does through the same use case, and the other way round.
 - Adapters are chosen in exactly one place (composition root per frontend). No service locators, no statics.
-- Each format (MP3 now; FLAC, M4A/MP4 later) is an adapter concern. Core models tags format-neutrally.
+- Each format (MP3 now; MP4 video later, maybe FLAC/M4A) is an adapter concern. Core models tags format-neutrally.
 - Tag versions (ID3v1/v1.1, ID3v2.2/2.3/2.4) are user-selectable write options (core type), defaulted by device
   profile. Adapters declare which versions they can write; core validates before writing.
 - **Native-image friendly**: no reflection-based frameworks (no Spring/Guice — manual wiring), no dynamic class
@@ -33,7 +34,8 @@ Rules:
 - Architecture rules are enforced by ArchUnit tests in `core`. Never weaken them to make code compile.
 - Architecture decisions are recorded as ADRs in `docs/adr/NNNN-title.md`.
 
-## Data safety (non-negotiable — this tool modifies the user's real music library)
+## Data safety (non-negotiable — this tool works on the user's real media library)
+- **Original files are never modified, moved or deleted.** All writing happens on copies in an output folder (export).
 - Every mutating operation supports **dry-run** and the CLI defaults to it (`--apply` to write).
 - Never overwrite or delete an audio file without a backup or a verified safe write (write to temp, verify, atomic move).
 - Never discard existing tag data silently. Unknown/unmapped frames are preserved unless removal is explicitly requested.
