@@ -46,6 +46,19 @@ Rules:
 - Package root: `dev.rs.slava.icxc.musicstudio` (`….musicstudio.core.*`, `….musicstudio.tag.jaudiotagger.*`, `….musicstudio.cli.*`, `….musicstudio.gui.*`)
 - Immutable domain objects (records), `Optional` for absent tag values, no `null` across module boundaries.
 - Use cases return result objects (incl. warnings/changes), they don't print.
+
+## Design by contract (technology is expected to change — GUI, tag library — so interfaces are the stable layer)
+- Every port, use case and public type is an **interface or record with full Javadoc**: what it does, every
+  `@param` (allowed values, nullability), **Preconditions:**, **Postconditions/Guarantees:**, `@throws`, and
+  thread-safety. An implementation must be replaceable by reading only the Javadoc.
+- **Every public method starts with its precondition checks**, always active, via the core helper `Require`
+  (e.g. `Require.nonNull(path, "path")`, `Require.that(n > 0, "n must be > 0")`) → `NullPointerException` /
+  `IllegalArgumentException`. Records validate in their compact constructor.
+- Java `assert` is used **in addition** for internal invariants and postconditions only. It is disabled at runtime
+  unless `-ea` is set (also in native images), so it must never be the only check. Tests run with `-ea`
+  (Surefire default).
+- Contract tests: each port has an abstract JUnit test class in core's test-jar that every adapter test extends, so a
+  new implementation (e.g. mp3agic) proves it fulfils the same contract.
 - Stories live in `docs/stories/`, ADRs in `docs/adr/`.
 
 ## Workflow

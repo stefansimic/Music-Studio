@@ -38,3 +38,6 @@ Cover art (→ 009), genre mapping beyond plain text (→ 008).
 
 ## Assumptions
 - There is no in-place tagging; writing tags is always part of an export.
+- Decided 2026-10-22: "Remove other tag versions" is a settings checkbox (default off; CLI `--remove-other-versions`).
+  A file has one ID3v2 and one ID3v1 slot: a selected version always converts the existing tag of that family;
+  the checkbox decides whether a tag of a family set to "none" is kept (warning) or removed.

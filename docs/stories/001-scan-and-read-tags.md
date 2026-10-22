@@ -37,3 +37,7 @@ Writing tags, MP4/FLAC, library database.
 
 ## Assumptions
 - File type is detected by extension `.mp3` (case-insensitive); content sniffing later if needed.
+- Decided 2026-10-22: hidden files and folders (incl. macOS `._*`) are skipped and shown in a list of skipped
+  files (reason "hidden"); `--include-hidden` scans them.
+- Decided 2026-10-22: whether a v1 value that is only the transliterated/truncated v2 value counts as a difference is
+  a settings checkbox (default: not a difference; CLI `--strict-v1-compare`).
