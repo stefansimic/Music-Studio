@@ -59,9 +59,13 @@ public abstract class ExportTargetContract {
         Path out = out();
         Path temp = subject().reserveTempPath(out.resolve("Song.mp3"));
         assertThat(temp.getParent()).isEqualTo(out);
-        assertThat(temp.getFileName().toString()).startsWith(".Song.mp3.").endsWith(ExportTarget.TEMP_SUFFIX);
+        assertThat(temp.getFileName().toString()).startsWith(".Song.").endsWith(".mp3")
+                .contains(ExportTarget.TEMP_MARKER);
         assertThat(temp).doesNotExist();
         assertThat(subject().reserveTempPath(out.resolve("Song.mp3"))).isNotEqualTo(temp);
+        String cyrillic = "ж".repeat(200) + ".mp3";
+        assertThat(subject().reserveTempPath(out.resolve(cyrillic)).getFileName().toString()
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8).length).isLessThanOrEqualTo(255);
         String longName = "x".repeat(250) + ".mp3";
         assertThat(subject().reserveTempPath(out.resolve(longName)).getFileName().toString().length())
                 .isLessThanOrEqualTo(255);
@@ -130,7 +134,7 @@ public abstract class ExportTargetContract {
         assertThatThrownBy(() -> target.findCollision(Path.of("rel.mp3"))).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> target.createDirectories(Path.of("rel"))).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> target.reserveTempPath(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> target.deleteTemp(Path.of("rel" + ExportTarget.TEMP_SUFFIX)))
+        assertThatThrownBy(() -> target.deleteTemp(Path.of("rel" + ExportTarget.TEMP_MARKER)))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> target.fingerprint(Path.of("rel.mp3"))).isInstanceOf(IllegalArgumentException.class);
     }

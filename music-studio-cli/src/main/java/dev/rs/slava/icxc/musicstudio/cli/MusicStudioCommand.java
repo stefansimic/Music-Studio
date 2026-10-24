@@ -3,6 +3,8 @@ package dev.rs.slava.icxc.musicstudio.cli;
 import dev.rs.slava.icxc.musicstudio.app.MusicStudio;
 import dev.rs.slava.icxc.musicstudio.core.contract.Require;
 import dev.rs.slava.icxc.musicstudio.core.task.Cancellation;
+import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -25,11 +27,25 @@ public final class MusicStudioCommand implements Callable<Integer> {
      * @return the configured command line; never null
      */
     public static CommandLine commandLine(MusicStudio studio, Cancellation cancel) {
+        return commandLine(studio, cancel, Optional.empty());
+    }
+
+    /**
+     * Builds the command line.
+     *
+     * @param studio    the wired application; not null
+     * @param cancel    cancellation; not null
+     * @param reportDir where JSON reports of applied exports are saved; not null (empty = not saved)
+     * @return the command line; never null
+     */
+    public static CommandLine commandLine(MusicStudio studio, Cancellation cancel, Optional<Path> reportDir) {
+        Require.nonNull(reportDir, "reportDir");
         Require.nonNull(studio, "studio");
         Require.nonNull(cancel, "cancel");
         CommandLine commandLine = new CommandLine(new MusicStudioCommand());
         commandLine.addSubcommand(new CommandLine(new ScanCommand(studio.scan(), cancel)));
         commandLine.addSubcommand(new CommandLine(new ExtractCommand(studio.scan(), studio.propose(), cancel)));
+        commandLine.addSubcommand(new CommandLine(new ExportCommand(studio.exportFolder(), cancel, reportDir)));
         commandLine.setCaseInsensitiveEnumValuesAllowed(true);
         return commandLine;
     }

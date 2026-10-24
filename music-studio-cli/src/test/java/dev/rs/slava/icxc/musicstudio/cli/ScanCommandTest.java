@@ -2,7 +2,6 @@ package dev.rs.slava.icxc.musicstudio.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.rs.slava.icxc.musicstudio.app.MusicStudio;
 import dev.rs.slava.icxc.musicstudio.core.extract.ProposalSet;
 import dev.rs.slava.icxc.musicstudio.core.model.Issue;
 import dev.rs.slava.icxc.musicstudio.core.model.IssueCode;
@@ -36,7 +35,7 @@ class ScanCommandTest {
             request.set(scanRequest);
             return behaviour.apply(scanRequest);
         };
-        CommandLine commandLine = MusicStudioCommand.commandLine(new MusicStudio(fake, request -> ProposalSet.of(List.of())), Cancellation.NONE);
+        CommandLine commandLine = MusicStudioCommand.commandLine(Studios.of(fake, request -> ProposalSet.of(List.of())), Cancellation.NONE);
         commandLine.setOut(new PrintWriter(out, true));
         commandLine.setErr(new PrintWriter(err, true));
         return commandLine.execute(args);
@@ -139,7 +138,7 @@ class ScanCommandTest {
                     Issue.error(IssueCode.READ_FAILED, "not a readable MP3 file").forFile(root.resolve("bad.mp3"))));
             return new ScanSummary(root, ScanStatus.COMPLETED, 1, 0, 1, 0, 0, Map.of(), List.of(), List.of());
         };
-        CommandLine commandLine = MusicStudioCommand.commandLine(new MusicStudio(fake, request -> ProposalSet.of(List.of())), Cancellation.NONE);
+        CommandLine commandLine = MusicStudioCommand.commandLine(Studios.of(fake, request -> ProposalSet.of(List.of())), Cancellation.NONE);
         commandLine.setOut(new PrintWriter(out, true));
         assertThat(commandLine.execute("scan", root.toString())).isEqualTo(ExitCode.ITEM_ERRORS);
         assertThat(out.toString()).contains("bad.mp3").contains("ERROR: not a readable MP3 file");

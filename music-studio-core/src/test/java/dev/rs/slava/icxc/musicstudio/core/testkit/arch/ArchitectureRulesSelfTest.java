@@ -8,6 +8,7 @@ import dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.BadService;
 import dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.ImpureExtract;
 import dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.LoadsDynamically;
 import dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.MutableField;
+import dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.PlanThatWrites;
 import dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.UsesFiles;
 import dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.UsesReflection;
 import org.junit.jupiter.api.Test;
@@ -61,6 +62,15 @@ class ArchitectureRulesSelfTest {
         JavaClasses impure = new ClassFileImporter().importClasses(ImpureExtract.class);
         assertThatThrownBy(() -> ArchitectureRules.pureFeature("..violations..").check(impure))
                 .isInstanceOf(AssertionError.class).hasMessageContaining("Cancellation");
+    }
+
+    @Test
+    void a13DetectsWritingOutsideApply() {
+        JavaClasses planner = new ClassFileImporter().importClasses(PlanThatWrites.class);
+        assertThatThrownBy(() -> ArchitectureRules.onlyWrites("some.other.Class").check(planner))
+                .isInstanceOf(AssertionError.class).hasMessageContaining("createDirectories");
+        JavaClasses planAndImpure = new ClassFileImporter().importClasses(PlanThatWrites.class, ImpureExtract.class);
+        ArchitectureRules.onlyWrites(PlanThatWrites.class.getName()).check(planAndImpure);
     }
 
     @Test

@@ -27,6 +27,11 @@ class CliArchitectureTest {
     }
 
     @Test
+    void a13NoDirectWrites() {
+        ArchitectureRules.onlyWrites("dev.rs.slava.icxc.musicstudio.core.export.ApplyExportService").check(classes);
+    }
+
+    @Test
     void a10LibraryContainment() {
         for (ArchRule rule : ArchitectureRules.A10_LIBRARY_CONTAINMENT) {
             rule.check(classes);

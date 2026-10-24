@@ -109,19 +109,15 @@ public final class FakeExportTarget implements ExportTarget {
         Require.absolute(finalTarget, "finalTarget");
         call(Operation.RESERVE_TEMP, finalTarget);
         String name = finalTarget.getFileName().toString();
-        String suffix = "." + "%06x".formatted(counter.incrementAndGet() & 0xFFFFFF) + TEMP_SUFFIX;
-        String head = "." + name;
-        if (head.length() + suffix.length() > 255) {
-            head = head.substring(0, 255 - suffix.length());
-        }
-        return finalTarget.resolveSibling(head + suffix);
+        String tempName = ExportTarget.tempName(name, "%06x".formatted(counter.incrementAndGet() & 0xFFFFFF));
+        return finalTarget.resolveSibling(tempName);
     }
 
     @Override
     public synchronized void moveNoReplace(Path temp, Path target) throws MediaAccessException {
         Require.absolute(temp, "temp");
         Require.absolute(target, "target");
-        Require.that(temp.getFileName().toString().endsWith(TEMP_SUFFIX), "not a temp file: %s", temp);
+        Require.that(ExportTarget.isTempName(temp.getFileName().toString()), "not a temp file: %s", temp);
         Require.that(temp.getParent().equals(target.getParent()), "temp and target must share a directory");
         call(Operation.MOVE, target);
         try {
@@ -144,7 +140,7 @@ public final class FakeExportTarget implements ExportTarget {
     @Override
     public synchronized void deleteTemp(Path temp) throws MediaAccessException {
         Require.absolute(temp, "temp");
-        Require.that(temp.getFileName().toString().endsWith(TEMP_SUFFIX), "not a temp file: %s", temp);
+        Require.that(ExportTarget.isTempName(temp.getFileName().toString()), "not a temp file: %s", temp);
         call(Operation.DELETE_TEMP, temp);
         try {
             Files.deleteIfExists(temp);

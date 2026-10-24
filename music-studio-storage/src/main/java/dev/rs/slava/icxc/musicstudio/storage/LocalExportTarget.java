@@ -99,12 +99,8 @@ public final class LocalExportTarget implements ExportTarget {
         for (int attempt = 0; attempt < 100; attempt++) {
             byte[] bytes = new byte[3];
             random.nextBytes(bytes);
-            String suffix = "." + HexFormat.of().formatHex(bytes) + TEMP_SUFFIX;
-            String head = "." + finalTarget.getFileName();
-            if (head.length() + suffix.length() > MAX_NAME) {
-                head = head.substring(0, MAX_NAME - suffix.length());
-            }
-            Path temp = finalTarget.resolveSibling(head + suffix);
+            Path temp = finalTarget.resolveSibling(
+                    ExportTarget.tempName(finalTarget.getFileName().toString(), HexFormat.of().formatHex(bytes)));
             if (!Files.exists(temp, LinkOption.NOFOLLOW_LINKS)) {
                 return temp;
             }
@@ -116,13 +112,17 @@ public final class LocalExportTarget implements ExportTarget {
     public void moveNoReplace(Path temp, Path target) throws MediaAccessException {
         Require.absolute(temp, "temp");
         Require.absolute(target, "target");
-        Require.that(temp.getFileName().toString().endsWith(TEMP_SUFFIX), "not a temp file: %s", temp);
+        Require.that(ExportTarget.isTempName(temp.getFileName().toString()), "not a temp file: %s", temp);
         Require.that(temp.getParent().equals(target.getParent()), "temp and target must share a directory");
         if (!Files.exists(temp, LinkOption.NOFOLLOW_LINKS)) {
             throw new MediaAccessException(Reason.NOT_FOUND, temp, "the temp file is missing", null);
         }
         if (useHardLinks && tryHardLink(temp, target)) {
-            deleteTemp(temp);
+            try {
+                deleteTemp(temp);
+            } catch (MediaAccessException ignored) {
+                // the target exists and is complete; a leftover temp is harmless and the caller retries the delete
+            }
             return;
         }
         if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
@@ -149,7 +149,12 @@ public final class LocalExportTarget implements ExportTarget {
         } catch (AccessDeniedException e) {
             throw new MediaAccessException(Reason.ACCESS_DENIED, target, "access denied: " + target, e);
         } catch (FileSystemException e) {
-            return false; // e.g. "Operation not permitted" on FAT/exFAT: fall back
+            String reason = e.getReason() == null ? "" : e.getReason().toLowerCase(java.util.Locale.ROOT);
+            if (reason.contains("not permitted") || reason.contains("not supported")
+                    || reason.contains("cross-device")) {
+                return false; // e.g. FAT/exFAT has no hard links: fall back to a rename
+            }
+            throw failure(target, e);
         } catch (IOException e) {
             throw failure(target, e);
         }
@@ -158,7 +163,7 @@ public final class LocalExportTarget implements ExportTarget {
     @Override
     public void deleteTemp(Path temp) throws MediaAccessException {
         Require.absolute(temp, "temp");
-        Require.that(temp.getFileName() != null && temp.getFileName().toString().endsWith(TEMP_SUFFIX),
+        Require.that(temp.getFileName() != null && ExportTarget.isTempName(temp.getFileName().toString()),
                 "not a temp file: %s", temp);
         try {
             Files.deleteIfExists(temp);

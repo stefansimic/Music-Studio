@@ -1,6 +1,10 @@
 package dev.rs.slava.icxc.musicstudio.app;
 
 import dev.rs.slava.icxc.musicstudio.core.contract.Require;
+import dev.rs.slava.icxc.musicstudio.core.export.ApplyExportUseCase;
+import dev.rs.slava.icxc.musicstudio.core.export.ExportFolderUseCase;
+import dev.rs.slava.icxc.musicstudio.core.export.PlanExportUseCase;
+import dev.rs.slava.icxc.musicstudio.core.export.WriteOptionsUseCase;
 import dev.rs.slava.icxc.musicstudio.core.extract.ProposeMetadataUseCase;
 import dev.rs.slava.icxc.musicstudio.core.scan.ScanMediaUseCase;
 
@@ -10,8 +14,14 @@ import dev.rs.slava.icxc.musicstudio.core.scan.ScanMediaUseCase;
  *
  * @param scan    list a folder and read the tags of its media files; not null
  * @param propose compute proposed metadata from names, fixed values, auto-numbering and edits (pure); not null
+ * @param writeOptions what can be written and whether options are possible; not null
+ * @param planExport    the export dry-run; not null
+ * @param applyExport   the export; not null
+ * @param exportFolder  the whole folder flow (scan, propose, plan, apply); not null
  */
-public record MusicStudio(ScanMediaUseCase scan, ProposeMetadataUseCase propose) {
+public record MusicStudio(ScanMediaUseCase scan, ProposeMetadataUseCase propose, WriteOptionsUseCase writeOptions,
+                          PlanExportUseCase planExport, ApplyExportUseCase applyExport,
+                          ExportFolderUseCase exportFolder) {
 
     /**
      * Validates the components.
@@ -21,5 +31,9 @@ public record MusicStudio(ScanMediaUseCase scan, ProposeMetadataUseCase propose)
     public MusicStudio {
         Require.nonNull(scan, "scan");
         Require.nonNull(propose, "propose");
+        Require.nonNull(writeOptions, "writeOptions");
+        Require.nonNull(planExport, "planExport");
+        Require.nonNull(applyExport, "applyExport");
+        Require.nonNull(exportFolder, "exportFolder");
     }
 }

@@ -10,6 +10,7 @@ import dev.rs.slava.icxc.musicstudio.core.model.TagReadResult;
 import dev.rs.slava.icxc.musicstudio.core.port.DirectoryListing;
 import dev.rs.slava.icxc.musicstudio.core.port.ListingOptions;
 import dev.rs.slava.icxc.musicstudio.core.port.MediaAccessException;
+import dev.rs.slava.icxc.musicstudio.core.port.ExportTarget;
 import dev.rs.slava.icxc.musicstudio.core.port.MediaFileSource;
 import dev.rs.slava.icxc.musicstudio.core.model.SkippedEntry;
 import dev.rs.slava.icxc.musicstudio.core.port.TagReader;
@@ -76,7 +77,7 @@ public final class ScanMediaService implements ScanMediaUseCase {
         for (Path file : listing.files()) {
             String name = file.getFileName().toString();
             Optional<MediaFormat> format = MediaFormat.ofFileName(name);
-            if (format.isPresent() && request.formats().contains(format.get())
+            if (format.isPresent() && !ExportTarget.isTempName(name) && request.formats().contains(format.get())
                     && reader.readableFormats().contains(format.get())) {
                 candidates.add(file);
             } else {

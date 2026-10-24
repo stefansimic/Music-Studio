@@ -1,12 +1,20 @@
 package dev.rs.slava.icxc.musicstudio.app;
 
 import dev.rs.slava.icxc.musicstudio.core.contract.Require;
+import dev.rs.slava.icxc.musicstudio.core.export.ApplyExportService;
+import dev.rs.slava.icxc.musicstudio.core.export.ExportFolderService;
+import dev.rs.slava.icxc.musicstudio.core.export.PlanExportService;
+import dev.rs.slava.icxc.musicstudio.core.export.WriteOptionsService;
 import dev.rs.slava.icxc.musicstudio.core.extract.ProposeMetadataService;
+import dev.rs.slava.icxc.musicstudio.core.port.ExportTarget;
 import dev.rs.slava.icxc.musicstudio.core.port.MediaFileSource;
 import dev.rs.slava.icxc.musicstudio.core.port.TagReader;
+import dev.rs.slava.icxc.musicstudio.core.port.TagWriter;
 import dev.rs.slava.icxc.musicstudio.core.scan.ScanMediaService;
+import dev.rs.slava.icxc.musicstudio.storage.LocalExportTarget;
 import dev.rs.slava.icxc.musicstudio.storage.LocalMediaFileSource;
 import dev.rs.slava.icxc.musicstudio.tag.jaudiotagger.JaudiotaggerTagReader;
+import dev.rs.slava.icxc.musicstudio.tag.jaudiotagger.JaudiotaggerTagWriter;
 
 /**
  * The composition root: the only place that chooses adapters and instantiates services. Contains no logic.
@@ -38,6 +46,14 @@ public final class MusicStudioFactory {
     public MusicStudio create() {
         MediaFileSource source = new LocalMediaFileSource();
         TagReader reader = new JaudiotaggerTagReader();
-        return new MusicStudio(new ScanMediaService(source, reader), new ProposeMetadataService());
+        TagWriter writer = new JaudiotaggerTagWriter();
+        ExportTarget exportTarget = new LocalExportTarget();
+        ScanMediaService scan = new ScanMediaService(source, reader);
+        ProposeMetadataService propose = new ProposeMetadataService();
+        WriteOptionsService writeOptions = new WriteOptionsService(writer);
+        PlanExportService plan = new PlanExportService(writer, exportTarget, config.clock());
+        ApplyExportService apply = new ApplyExportService(writer, reader, exportTarget, config.clock());
+        return new MusicStudio(scan, propose, writeOptions, plan, apply,
+                new ExportFolderService(scan, propose, writeOptions, plan, apply));
     }
 }

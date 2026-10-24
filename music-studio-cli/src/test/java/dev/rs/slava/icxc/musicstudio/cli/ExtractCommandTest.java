@@ -2,7 +2,6 @@ package dev.rs.slava.icxc.musicstudio.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import dev.rs.slava.icxc.musicstudio.app.MusicStudio;
 import dev.rs.slava.icxc.musicstudio.core.extract.AutoNumbering;
 import dev.rs.slava.icxc.musicstudio.core.extract.ExtractionSpec;
 import dev.rs.slava.icxc.musicstudio.core.extract.FieldOverride;
@@ -53,7 +52,7 @@ class ExtractCommandTest {
                     List.of());
         };
         ProposeMetadataService real = new ProposeMetadataService();
-        CommandLine commandLine = MusicStudioCommand.commandLine(new MusicStudio(scan, proposeRequest -> {
+        CommandLine commandLine = MusicStudioCommand.commandLine(Studios.of(scan, proposeRequest -> {
             request.set(proposeRequest);
             return real.propose(proposeRequest);
         }), Cancellation.NONE);

@@ -5,7 +5,7 @@ import dev.rs.slava.icxc.musicstudio.core.testkit.arch.ArchitectureRules;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-/** Applies A1–A7, A11 and A12 to core's production classes. */
+/** Applies A1–A7 and A11–A13 to core's production classes. */
 class CoreArchitectureTest {
 
     private static JavaClasses classes;
@@ -53,6 +53,11 @@ class CoreArchitectureTest {
     @Test
     void a12ExtractIsPure() {
         ArchitectureRules.A12_EXTRACT_IS_PURE.check(classes);
+    }
+
+    @Test
+    void a13OnlyApplyWrites() {
+        ArchitectureRules.A13_ONLY_APPLY_WRITES.check(classes);
     }
 
     @Test

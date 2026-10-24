@@ -9,6 +9,7 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaField;
+import com.tngtech.archunit.core.domain.JavaMethodCall;
 import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -189,6 +190,32 @@ public final class ArchitectureRules {
 
     /** A12: extraction (propose) is pure: it gets values, never ports. */
     public static final ArchRule A12_EXTRACT_IS_PURE = pureFeature(CORE + ".extract..");
+
+    // --- A13: only apply writes ----------------------------------------------------------------------------
+
+    private static final String TAG_WRITER = CORE + ".port.TagWriter";
+    private static final String EXPORT_TARGET = CORE + ".port.ExportTarget";
+    private static final Set<String> MUTATING = Set.of("writeCopy", "createDirectories", "reserveTempPath",
+            "moveNoReplace", "deleteTemp");
+
+    /**
+     * A13: no class except {@code allowed} (and the adapters that implement the ports) calls a mutating method of {@code TagWriter} or {@code ExportTarget}.
+     *
+     * @param allowed the fully qualified name of the one class that may write
+     * @return the rule
+     */
+    public static ArchRule onlyWrites(String allowed) {
+        return noClasses().that().doNotHaveFullyQualifiedName(allowed)
+                .and().resideOutsideOfPackages(ROOT + ".storage..", ROOT + ".tag..", ROOT + ".player..")
+                .should().callMethodWhere(describe("mutate files through a port", (JavaMethodCall call) ->
+                        MUTATING.contains(call.getTarget().getName())
+                                && (call.getTargetOwner().isAssignableTo(TAG_WRITER)
+                                || call.getTargetOwner().isAssignableTo(EXPORT_TARGET))))
+                .as("A13: only " + allowed + " writes (TagWriter.writeCopy, ExportTarget mutations)");
+    }
+
+    /** A13: only {@code ApplyExportService} writes. */
+    public static final ArchRule A13_ONLY_APPLY_WRITES = onlyWrites(CORE + ".export.ApplyExportService");
 
     // --- A7: services ---------------------------------------------------------------------------------------
 

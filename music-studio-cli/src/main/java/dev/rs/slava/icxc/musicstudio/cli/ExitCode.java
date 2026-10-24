@@ -1,6 +1,8 @@
 package dev.rs.slava.icxc.musicstudio.cli;
 
 import dev.rs.slava.icxc.musicstudio.core.contract.Require;
+import dev.rs.slava.icxc.musicstudio.core.export.ExportPlan;
+import dev.rs.slava.icxc.musicstudio.core.export.ExportReport;
 import dev.rs.slava.icxc.musicstudio.core.extract.ProposalSet;
 import dev.rs.slava.icxc.musicstudio.core.model.IssueCode;
 import dev.rs.slava.icxc.musicstudio.core.model.Severity;
@@ -55,5 +57,32 @@ public final class ExitCode {
         }
         boolean skipped = proposals.proposals().stream().anyMatch(p -> !p.exportable());
         return skipped ? ITEM_ERRORS : OK;
+    }
+
+    /**
+     * @param plan the export plan; not null
+     * @return USAGE if the plan cannot be executed, ITEM_ERRORS if any file is skipped because of an error,
+     *         otherwise OK
+     */
+    public static int of(ExportPlan plan) {
+        Require.nonNull(plan, "plan");
+        if (!plan.executable()) {
+            return USAGE;
+        }
+        return plan.skipCount() > 0 ? ITEM_ERRORS : OK;
+    }
+
+    /**
+     * @param report the export report; not null
+     * @return OK if completed, ITEM_ERRORS if some files failed, ABORTED or CANCELLED accordingly
+     */
+    public static int of(ExportReport report) {
+        Require.nonNull(report, "report");
+        return switch (report.status()) {
+            case COMPLETED -> OK;
+            case COMPLETED_WITH_ERRORS -> ITEM_ERRORS;
+            case ABORTED -> ABORTED;
+            case CANCELLED -> CANCELLED;
+        };
     }
 }

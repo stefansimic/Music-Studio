@@ -1,7 +1,9 @@
 package dev.rs.slava.icxc.musicstudio.core.port;
 
+import dev.rs.slava.icxc.musicstudio.core.contract.Require;
 import dev.rs.slava.icxc.musicstudio.core.model.FileFingerprint;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,8 +18,42 @@ import java.util.Optional;
  */
 public interface ExportTarget {
 
-    /** Suffix of every temp file name. */
-    String TEMP_SUFFIX = ".musicstudio-tmp";
+    /** Marker inside every temp file name; the final extension follows it so a {@code TagReader} can read the temp. */
+    String TEMP_MARKER = ".musicstudio-tmp";
+
+    /** Shape of a temp name, see {@link #tempName}. */
+    Pattern TEMP_NAME = Pattern.compile("\\..+\\.[0-9a-f]{6}\\.musicstudio-tmp(\\..+)?");
+
+    /**
+     * The temp name for a final file name: {@code .<stem>.<hex>.musicstudio-tmp[.<ext>]}, at most 255 UTF-8 bytes.
+     * Pure; shared by all implementations so they name temps alike.
+     *
+     * @param finalName the final file name; not null, not blank
+     * @param hex       a unique token, e.g. 6 hex digits; not null, not blank
+     * @return the temp file name; never null
+     */
+    static String tempName(String finalName, String hex) {
+        Require.nonBlank(finalName, "finalName");
+        Require.nonBlank(hex, "hex");
+        int dot = finalName.lastIndexOf('.');
+        String stem = dot > 0 ? finalName.substring(0, dot) : finalName;
+        String suffix = "." + hex + TEMP_MARKER + (dot > 0 ? finalName.substring(dot) : "");
+        String head = "." + stem;
+        int room = 255 - suffix.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
+        while (head.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > room) {
+            head = head.substring(0, head.offsetByCodePoints(head.length(), -1));
+        }
+        return head + suffix;
+    }
+
+    /**
+     * @param fileName a file name; not null
+     * @return true if the name was produced by {@link #tempName}
+     */
+    static boolean isTempName(String fileName) {
+        Require.nonNull(fileName, "fileName");
+        return TEMP_NAME.matcher(fileName).matches();
+    }
 
     /**
      * Finds an existing entry that a file at {@code target} would collide with: the same name, also when it differs
@@ -41,7 +77,7 @@ public interface ExportTarget {
     List<Path> createDirectories(Path directory) throws MediaAccessException;
 
     /**
-     * A temp path next to {@code finalTarget}: same directory, name {@code .<name>.<6 hex>.musicstudio-tmp}, at most
+     * A temp path next to {@code finalTarget}: same directory, name per {@link #tempName} (keeps the extension), at most
      * 255 characters, not existing. Nothing is created.
      *
      * @param finalTarget absolute; not null; its parent exists
@@ -53,13 +89,16 @@ public interface ExportTarget {
     /**
      * Moves a temp file to its final name without ever replacing an existing file.
      *
-     * <p><b>Preconditions:</b> both absolute, same directory, temp ends with {@link #TEMP_SUFFIX} (IAE).
+     * <p><b>Preconditions:</b> both absolute, same directory, temp is a {@link #isTempName temp name} (IAE).
      * <p><b>Postconditions:</b> the target has the temp's content and modification time; the temp is gone.
      * <p><b>On failure:</b> ALREADY_EXISTS if the target exists – the existing target is unchanged and the temp
      * still exists (the caller deletes it).
      *
      * @param temp   the written temp file; not null
      * @param target the final path; not null
+     * <p><b>Known gap:</b> on file systems without hard links (FAT/exFAT) the move is check-then-rename, so a file
+     * created by another process in that instant could be replaced.
+     *
      * @throws MediaAccessException ALREADY_EXISTS, NOT_FOUND (temp missing), ACCESS_DENIED, IO
      */
     void moveNoReplace(Path temp, Path target) throws MediaAccessException;
@@ -67,7 +106,7 @@ public interface ExportTarget {
     /**
      * Deletes a temp file if it exists.
      *
-     * @param temp absolute, name ends with {@link #TEMP_SUFFIX} (IAE otherwise); not null
+     * @param temp absolute, name is a {@link #isTempName temp name} (IAE otherwise); not null
      * @throws MediaAccessException ACCESS_DENIED, IO
      */
     void deleteTemp(Path temp) throws MediaAccessException;

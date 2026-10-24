@@ -4,6 +4,7 @@ import dev.rs.slava.icxc.musicstudio.app.AppConfig;
 import dev.rs.slava.icxc.musicstudio.app.MusicStudio;
 import dev.rs.slava.icxc.musicstudio.app.MusicStudioFactory;
 import dev.rs.slava.icxc.musicstudio.core.task.CancellationSource;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +42,8 @@ public final class CliMain {
                 Thread.currentThread().interrupt();
             }
         }, "musicstudio-cancel"));
-        int code = MusicStudioCommand.commandLine(studio, cancel).execute(args);
+        int code = MusicStudioCommand.commandLine(studio, cancel, Optional.of(config.dataDir().resolve("reports")))
+                .execute(args);
         finished.countDown();
         System.exit(code);
     }
