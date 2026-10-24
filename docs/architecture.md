@@ -104,11 +104,11 @@ above it in this table.
 |---|---|---|
 | `contract` | `Require` (always-on preconditions) | skeleton |
 | `text` | `Transliterator` (Serbian Cyrillic → Gaj Latin → ASCII), `Id3v1Text` (fit to N bytes), `FileNameSanitizer`, `NamingRules` | 001/004 |
-| `model` | `MediaFormat`, `Field`, `FieldType`, `FieldValue` (+ `Text`, `YearValue`, `Position`, `Genres`), `Genre`, `MediaMetadata`, `TagFamily`, `TagVersion`, `TagLayer`, `TagReadResult`, `StreamInfo`, `CoverInfo`, `CoverArt`, `PictureType`, `FileFingerprint`, `Issue`, `Severity`, `IssueCode`, `PathOrder`, `V1Comparison`, `Id3v1Genres` (genre table is domain data) | 001 |
+| `model` | `MediaFormat`, `Field`, `FieldType`, `FieldValue` (+ `Text`, `YearValue`, `Position`, `Genres`), `Genre`, `MediaMetadata`, `TagFamily`, `TagVersion`, `TagLayer`, `TagReadResult`, `StreamInfo`, `CoverInfo`, `CoverArt`, `PictureType`, `FileFingerprint`, `Issue`, `Severity`, `IssueCode`, `PathOrder`, `V1Comparison`, `Id3v1Genres` (genre table is domain data), `SkippedEntry`, `SkipReason` | 001 |
 | `tag` | `TagWriteOptions`, `Id3v2Choice`, `Id3v1Choice`, `V2Encoding`, `V1TextMode`, `FormatCapabilities`, `TagWriteRequest`, `FieldChanges`, `CoverChange`, `Id3v1Values`, `Id3v1Projection`, `WriteVerifier` | 003 |
 | `pattern` | `InputPattern`, `OutputPattern`, `PatternSegment`, `Token` (+ `Literal`, `Placeholder`, `Wildcard`), `NumberFormat`, `PatternParser`, `PatternParseResult`, `PatternError`, `PathMatcher`, `MatchResult`, `PathRenderer`, `RenderResult` | 002/004 |
 | `task` | `Cancellation`, `CancellationSource`, `OperationCancelledException`, `ProgressListener`, `ProgressEvent`, `ByteProgress` | 001 |
-| `port` | `MediaFileSource`, `ListingOptions`, `DirectoryListing`, `SkippedEntry`, `SkipReason`, `TagReader`, `TagWriter`, `ExportTarget`, `StoreInfo`, `ExportJournalStore`, `ExportJournal`, `JournalEntry`, `MediaAccessException`, `StoreException`; later `ProfileStore`, `PresetStore`, `GenreStore`, `LibraryIndexStore`, `ImageTranscoder`, `PlaybackEngine` | 001–011 |
+| `port` | `MediaFileSource`, `ListingOptions`, `DirectoryListing`, `TagReader`, `TagWriter`, `ExportTarget`, `StoreInfo`, `ExportJournalStore`, `ExportJournal`, `JournalEntry`, `MediaAccessException`, `StoreException`; later `ProfileStore`, `PresetStore`, `GenreStore`, `LibraryIndexStore`, `ImageTranscoder`, `PlaybackEngine` | 001–011 |
 | `scan` | `ScanMediaUseCase`, `ScanRequest`, `ScanItem` (`ScannedFile`, `UnreadableFile`), `ScanSummary`, `ScanStatus`, `ScanMediaService` | 001 |
 | `extract` | `ProposeMetadataUseCase`, `ProposeRequest`, `ExtractionSpec`, `FieldOverride`, `MergeMode`, `AutoNumbering`, `ManualEdits`, `FieldEdit`, `Proposal`, `ProposalSet`, `MatchStatus`, `FieldChange`, `ChangeOrigin`, `ProposeMetadataService` | 002 |
 | `export` | `WriteOptionsUseCase`, `PlanExportUseCase`, `ApplyExportUseCase`, `UndoExportUseCase`, `ExportSpec`, `CollisionPolicy`, `PlanExportRequest`, `ExportPlan`, `PlannedFile`, `PlannedAction`, `SpaceEstimate`, `ExportId`, `ExportReport`, `ExportStatus`, `UndoPlan`, `UndoStep`, `UndoReport`, `ExportSummary`, `*Service`, `CollisionResolver` | 003/004 |
@@ -379,7 +379,7 @@ public enum Severity { INFO, WARNING, ERROR }
 /** Stable codes so frontends can render/localise and tests can assert without string matching. */
 public enum IssueCode {
     // read / scan
-    READ_FAILED, TAG_DAMAGED, READ_VALUE_INVALID, LISTING_ACCESS_DENIED, ROOT_NOT_FOUND, V1_V2_CONFLICT,
+    READ_FAILED, TAG_DAMAGED, READ_VALUE_INVALID, LISTING_ACCESS_DENIED, ROOT_NOT_FOUND, V1_V2_CONFLICT, NO_AUDIO_STREAM,
     // extract
     NO_MATCH, AMBIGUOUS_MATCH, VALUE_INVALID_FOR_FIELD, POSITION_EXCEEDS_TOTAL,
     // write options / tags
@@ -494,10 +494,14 @@ public interface MediaFileSource {
 public record ListingOptions(boolean recursive, boolean includeHidden, Set<Path> excludedDirectories) {}
 /** files, skipped: absolute, no nulls, unique, disjoint; issues: no nulls. */
 public record DirectoryListing(Path root, List<Path> files, List<SkippedEntry> skipped, List<Issue> issues) {}
-/** A file or directory deliberately not scanned. path absolute. */
+/** A file or directory deliberately not scanned. path absolute. Lives in core.model (see note below). */
 public record SkippedEntry(Path path, SkipReason reason) {}
-public enum SkipReason { HIDDEN, DIRECTORY_SYMLINK, EXCLUDED }
+public enum SkipReason { HIDDEN, DIRECTORY_SYMLINK, EXCLUDED, BROKEN_SYMLINK }   // BROKEN_SYMLINK: target missing
 ```
+
+Note (2026-10-22, implementation of 001): `SkippedEntry` and `SkipReason` live in `core.model`, not `core.port`.
+`ScanSummary.skipped()` returns them to the frontends, and rule A9 forbids frontends to depend on `core.port`.
+They are plain values, so the model layer is their natural home; the port uses them from there.
 
 ### 6.2 `TagReader` (001) – full contract
 
@@ -916,7 +920,8 @@ public record ScannedFile(Path path, MediaFormat format, FileFingerprint fingerp
 public record UnreadableFile(Path path, MediaFormat format, Issue error) implements ScanItem {}
 
 public enum ScanStatus { COMPLETED, CANCELLED, FAILED }
-public record ScanSummary(Path root, ScanStatus status, int found, int read, int failed, int ignoredFiles,
+public record ScanSummary(Path root, ScanStatus status, int found, int read, int failed, int filesWithErrors,
+                          int ignoredFiles,
                           Map<String, Integer> ignoredByExtension, List<SkippedEntry> skipped, List<Issue> issues) {}
 ```
 
@@ -971,20 +976,34 @@ public record AutoNumbering(NumberingOrder order, boolean setTotal) {
 public record ManualEdits(Map<Path, Map<Field, FieldEdit>> edits, Set<Path> acceptedAmbiguous) {
     public static final ManualEdits NONE;
 }
-public sealed interface FieldEdit { record Set(FieldValue value) implements FieldEdit {} record Clear() implements FieldEdit {} }
+public sealed interface FieldEdit { record Assign(FieldValue value) implements FieldEdit {} record Clear() implements FieldEdit {} }
 
 public enum MatchStatus { NO_PATTERN, MATCHED, AMBIGUOUS, AMBIGUOUS_ACCEPTED, NO_MATCH }
 public enum ChangeOrigin { PATTERN, FIXED, AUTO_NUMBER, MANUAL }   // 005: CLEANUP, 008: GENRE_MAP
 public record FieldChange(Field field, Optional<FieldValue> before, Optional<FieldValue> after, ChangeOrigin origin) {}
 
 public record Proposal(ScannedFile file, MatchStatus status, Optional<String> matchDetail,
-                       Map<Field, String> extracted, MediaMetadata proposed, List<FieldChange> changes,
-                       List<Issue> issues) {
+                       Map<Field, String> extracted, Map<Field, String> alternative, MediaMetadata proposed,
+                       List<FieldChange> changes, List<Issue> issues) {
     public MediaMetadata existing();   // = file.tags().effective()
     public boolean exportable();
 }
 public record ProposalSet(List<Proposal> proposals, int matched, int ambiguous, int noMatch) {}
 ```
+
+Decided while implementing 002 ([plan-002](plan-002.md) D2, D6–D10; binding):
+- `Proposal.alternative` holds the other (greedy) split of an ambiguous match, so the user sees *why* it is ambiguous.
+- `ExtractionSpec.problems(...)` returns user-level problems (auto-numbering together with `{track}` in the pattern or
+  a TRACK override); the constructor throws IAE with the same messages. The CLI exits with 2, the GUI greys out.
+- Auto-numbering runs per parent folder over exportable files only, and obeys the merge mode (FILL_EMPTY keeps an
+  existing track). Manual edits still win.
+- NO_MATCH ⇒ proposed == existing; fixed values and manual edits are not applied ("never written").
+- `FieldEdit.Set` is named `FieldEdit.Assign` (no clash with `java.util.Set`).
+- Severities: NO_MATCH ERROR; AMBIGUOUS_MATCH ERROR (WARNING once accepted); POSITION_EXCEEDS_TOTAL WARNING, only for
+  a changed track/disc.
+- `core.model.FieldValueParser` is the one parser for typed user text (pattern captures, `--set`, GUI cells); it
+  normalises to NFC. `{genre}`/`--set genre=` split on `;`.
+- Rule A12: `core.extract` uses neither `core.port` nor `core.task` (pure).
 
 ### 7.3 `WriteOptionsUseCase` (003) – full contract
 
@@ -1350,9 +1369,10 @@ public final class PatternParser {          // pure, stateless; static methods a
 public final class PathMatcher {
     public static MatchResult match(InputPattern pattern, Path file);
 }
-/** MATCHED: values; AMBIGUOUS: chosen values + alternativeCount (>=1); NO_MATCH: reason incl. segment index. */
+/** MATCHED: values; AMBIGUOUS: chosen values + alternative (the greedy split's differing raw values, ADR 0010);
+ *  NO_MATCH: reason, prefixed with the segment ("folder \"Best Of\": …") when the pattern has several levels. */
 public record MatchResult(MatchKind kind, Map<Field, FieldValue> values, Map<Field, String> raw,
-                          int alternativeCount, Optional<String> reason) {}
+                          Map<Field, String> alternative, Optional<String> reason) {}
 public final class PathRenderer {
     public static RenderResult render(OutputPattern pattern, MediaMetadata metadata, Map<Field, String> fallbacks,
                                       NamingRules naming, String extension);
@@ -1362,22 +1382,32 @@ public record RenderResult(List<String> segments, List<Issue> issues) { public P
 
 ### 10.2 Matching semantics (per segment; segments are independent)
 
-- **Literals**: case-sensitive. Leading/trailing spaces of a literal match zero or more whitespace characters, and
-  inner runs of spaces match one or more. So `" - "` matches `-`, `" - "` and `"  -   "`. This covers "extra spaces"
-  and "separator spaces trimmed".
-- **Placeholders** capture a non-empty string, which is stripped. Typed placeholders must also parse:
-  `{year}` = 4 digits, optionally in `()` or `[]` (brackets removed), range 1000–2999;
-  `{track}`/`{disc}` = `\d{1,4}` optionally followed by `of\d+` or `/\d+` → `Position`; `{genre}` → single `Genre`;
-  text placeholders → `Text`. `{*}` captures anything (it may also be empty).
-- **Algorithm**: dynamic programming over (token index, string position). It counts complete matches, capped at 2.
-  The chosen solution is the lexicographically shortest-capture-first one (non-greedy, left to right), reconstructed
-  from the table. Cost is O(tokens × length²) per segment, which is trivial for file names. A count of 1 gives
-  MATCHED; ≥2 gives AMBIGUOUS. Typed placeholders prune splits during the DP ("typed placeholders tried first to
-  resolve ambiguity").
+- **Normalisation**: names and literals are compared in Unicode NFC, code point by code point (ADR 0010).
+- **Literals**: case-sensitive. A literal is [leading whitespace] core [trailing whitespace]; every whitespace run
+  consumes the whole whitespace run of the name (possessive), so one split counts once. Strict tier: each run needs
+  ≥ 1 whitespace character (except at a segment edge); only if the strict tier finds no solution does the lenient
+  tier allow the leading/trailing runs to be empty (`Artist-Song`). Inner runs always need ≥ 1.
+- **Placeholders** capture a non-empty string, which is stripped (incl. no-break spaces) and parsed by
+  `FieldValueParser`: `{year}` = 4 digits, optionally in `()` or `[]`, 1000–2999; `{track}`/`{disc}` = 1–4 digits,
+  optionally `of`/`/` + total → `Position`; `{genre}` → genres split on `;`; text → `Text` (no control characters or
+  bidi overrides). `{*}` captures anything (it may also be empty).
+- **Algorithm**: dynamic programming over (token index, string position) counts complete matches, capped at 2. The
+  chosen solution is the non-greedy one (shortest captures first), reconstructed from the table. One set of
+  placeholder values → MATCHED; several sets (also when the shortest and longest split agree but a split in between
+  differs) → AMBIGUOUS with `alternative`. Splits that differ only in `{*}` text are MATCHED. Cost
+  O(tokens × length²) per segment.
 - **NO_MATCH reason**: the furthest position reached and the token that failed there
-  (e.g. `separator " - " not found after "Artist"`, or `"20x0" is not a 4-digit year`).
+  (e.g. `separator " - " not found after "Artist"`, or `"20x0" is not a valid year`).
+- Known limits (ADR 0010): the tier is chosen per segment, so one separator without spaces makes the whole segment
+  lenient; an empty `{*}` between two space-delimited separators (`A - - B` with `{a} - {*} - {b}`) does not match.
 - 012 extends the typed set: `{season}` digits, `{episode}` digits with optional double episode (`E01E02`, `E01-E02`).
   Dots as separators already work as literals (`{show}.S{season}E{episode}.{episodetitle}.{*}`).
+
+**Refined by [ADR 0010](adr/0010-input-pattern-matching-tiers-and-normalisation.md) (binding since 002):** whitespace
+runs of literals are possessive (one split = one solution); a strict tier requires the spaces around separators
+(`Jay-Z - Song` is not ambiguous), a lenient tier (`Artist-Song`) runs only if the strict tier finds nothing; names
+and literals are compared in NFC. Placeholder names are case-insensitive; a repeated placeholder and a trailing
+media extension are parse errors; parse error columns are UTF-16 char indices.
 
 ### 10.3 Rendering
 
@@ -1404,8 +1434,9 @@ Severity semantics: **ERROR** on an item means the item will not be written (SKI
 plan means the plan is not executable. **WARNING** means it will be written, but the user should look at it.
 **INFO** is shown in verbose output.
 
-CLI exit codes: `0` success; `1` completed with item errors; `2` usage/invalid input/not executable; `3` aborted
-(I/O failure of the journal or root); `130` cancelled (Ctrl-C).
+CLI exit codes: `0` success; `1` completed with item errors (unreadable files or files with an ERROR issue such as
+TAG_DAMAGED); `2` usage/invalid input/not executable (incl. scan root not found); `3` aborted (I/O failure of the
+journal or root); `130` cancelled (Ctrl-C).
 
 ## 12. Threading, progress, cancellation
 
@@ -1512,17 +1543,18 @@ Analysed package: `dev.rs.slava.icxc.musicstudio`; test classes are excluded.
 
 | # | Rule | Checked in |
 |---|---|---|
-| A1 | `core..` depends only on `core..` and whitelisted JDK packages: `java.lang`, `java.util..`, `java.time..`, `java.text`, `java.nio.file` (types `Path` only – see A2), `java.nio.charset`, `java.math` | core |
-| A2 | `core..` does not use `java.nio.file.Files`, `java.io.File*`, `RandomAccessFile`, `java.nio.channels..`, `java.net..`, `java.awt..`, `javax..`, `java.sql..`, `java.util.logging..`, `java.lang.reflect..`, `Class.forName`, `System.out/err`, `Path.toFile`, `Path.toRealPath` | core |
+| A1 | `core..` depends only on `core..` and whitelisted JDK packages: `java.lang`, `java.util..` (except `logging`, `prefs`, `zip`, `jar`, `spi`, `ServiceLoader`), `java.time..`, `java.text`, `java.nio.file` (type `Path` only – see A2), `java.nio.charset`, `java.math` | core |
+| A2 | `core..` does not use `java.nio.file.Files`, `java.io.File*`, `RandomAccessFile`, `java.nio.channels..`, `java.net..`, `java.awt..`, `javax..`, `java.sql..`, `java.util.logging..`, `java.lang.reflect..`, `Class.forName`, `System.out/err`, `System.getenv/getProperty`, `ProcessBuilder`, `Runtime`, `ClassLoader`, `Path.toFile`, `Path.toRealPath` | core |
 | A3 | Core layering as in §3 (`contract` ← `text` ← `model` ← `tag`/`pattern`/`task` ← `port` ← `scan` ← `extract` ← `export` ← later features) | core |
 | A4 | `core.port` contains only interfaces, records, enums and the two exception classes | core |
-| A5 | In `core.model`, `core.tag`, `core.pattern`, `core.task` every class is a record, enum, interface, or `final` class with only `static final` fields | core |
+| A5 | In `core.model`, `core.tag`, `core.pattern`, `core.task` every class is a record, enum, interface, or `final` class with only `static final` fields (single exception: `task.CancellationSource`, §12) | core |
 | A6 | All fields in `core..` are `final` | core |
 | A7 | Classes named `*Service` are `final`, public, implement exactly one `*UseCase` interface, and are only referenced from `core..` (tests) and `app..` | core + every module |
 | A8 | Adapters (`tag..`, `storage..`, `image..`, `player..`) do not depend on each other, on `app..`, `cli..`, `gui..`, or on `*Service` | each adapter |
 | A9 | `cli..` and `gui..` do not depend on `core.port..`, `*Service`, or adapter packages (exception: `gui.GuiMain` → `player.javafx`) | cli, gui |
 | A10 | Library containment: `org.jaudiotagger..` only in `tag.jaudiotagger..`; `picocli..` only in `cli..`; `javafx..` only in `gui..`/`player.javafx..`; `jakarta.json..`/`org.eclipse.parsson..` only in `storage..` | every module |
-| A11 | No class in our code uses `java.lang.reflect..` or `Class.forName` (native-image friendliness) | every module |
+| A12 | `core.extract` depends on neither `core.port` nor `core.task` (propose is pure) | core |
+| A11 | No class in our code uses `java.lang.reflect..`, `Class.forName`, `ClassLoader.loadClass`, `MethodHandles.Lookup.find*` or `ServiceLoader` (native-image friendliness, no service locators) | every module |
 
 Rules are never weakened to make code compile (`CLAUDE.md`). There is no freezing/baseline of violations.
 
@@ -1811,7 +1843,9 @@ See the hand-off summary. The answers will be folded into the stories and this d
 3. Undo journals and reports go to the app data dir, not onto the device. OK?
 4. **Resolved 2026-10-22:** effective value = v2 with v1 fallback. Whether transliteration/truncation counts as a
    difference is a settings checkbox (`AppSettings.v1Comparison`, default LENIENT; CLI `--strict-v1-compare`).
-5. Auto-numbering is per parent folder with total = files in that folder. OK?
-6. Merge mode applies to fixed values too (`--set` + `fill-empty` only fills empty fields). OK?
+5. **Decided in 002 (plan-002 D7, assumed – confirm):** auto-numbering is per parent folder with total = the
+   exportable files in that folder, and FILL_EMPTY keeps existing track numbers.
+6. **Decided in 002 (assumed – confirm):** merge mode applies to fixed values too (`--set` + `fill-empty` only fills
+   empty fields).
 7. Overwrite backups go to `<output>/.musicstudio-backup/<id>/` on the target device (they use space on the stick). OK?
-8. JUnit 5.13 vs JUnit 6.0: JUnit 6 is fine for Java 25. Choose on first build.
+8. **Resolved 2026-10-22:** JUnit 6.1 with plain `archunit` (rules applied with `rule.check(classes)`).

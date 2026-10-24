@@ -41,3 +41,8 @@ Cover art (→ 009), genre mapping beyond plain text (→ 008).
 - Decided 2026-10-22: "Remove other tag versions" is a settings checkbox (default off; CLI `--remove-other-versions`).
   A file has one ID3v2 and one ID3v1 slot: a selected version always converts the existing tag of that family;
   the checkbox decides whether a tag of a family set to "none" is kept (warning) or removed.
+- Decided 2026-10-23 (plan-003 open questions): `export --apply` ships in 003 without an undo journal – it only
+  ever creates new files and the report lists each one; journal and `undo` come with 004. Targets are flat
+  (`out/<file name>`), a second file with the same name is skipped. Files with a damaged tag are skipped. An ID3v1
+  genre without a number is written as 12 "Other" with a warning. ID3v1 structural limits (album artist, disc, track
+  total) are INFO; a full disk aborts the run.

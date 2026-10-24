@@ -9,14 +9,14 @@ adapter and the CLI. Must read everything that exists in real-world downloads: I
 or no tags at all.
 
 ## Acceptance criteria
-- [ ] Given a folder, when I scan it, then all `.mp3` files are found (optionally recursive, `--recursive`), sorted by path.
-- [ ] For each file I see: path, title, artist, album artist, album, track (n/total), disc (n/total), year, genre,
+- [x] Given a folder, when I scan it, then all `.mp3` files are found (optionally recursive, `--recursive`), sorted by path.
+- [x] For each file I see: path, title, artist, album artist, album, track (n/total), disc (n/total), year, genre,
       comment, has-cover yes/no, duration, bitrate, and which tag versions are present (e.g. `ID3v1.1 + ID3v2.3`).
-- [ ] If both v1 and v2 exist and differ, both values are available (v2 is shown as primary, a marker flags the difference).
-- [ ] Files without tags are listed with empty fields, not skipped.
-- [ ] Unreadable/corrupt files are listed with an error message; the scan continues.
-- [ ] Non-MP3 files are ignored (count reported).
-- [ ] Reading never modifies a file (verified by checksum in tests).
+- [x] If both v1 and v2 exist and differ, both values are available (v2 is shown as primary, a marker flags the difference).
+- [x] Files without tags are listed with empty fields, not skipped.
+- [x] Unreadable/corrupt files are listed with an error message; the scan continues.
+- [x] Non-MP3 files are ignored (count reported).
+- [x] Reading never modifies a file (verified by checksum in tests).
 
 ## Edge cases
 - Cyrillic, č ć š ž đ, umlauts, emoji in tags and filenames
@@ -41,3 +41,6 @@ Writing tags, MP4/FLAC, library database.
   files (reason "hidden"); `--include-hidden` scans them.
 - Decided 2026-10-22: whether a v1 value that is only the transliterated/truncated v2 value counts as a difference is
   a settings checkbox (default: not a difference; CLI `--strict-v1-compare`).
+- Decided 2026-10-23 (implementation): a symbolic link whose target is missing is listed under "Skipped (not
+  scanned)" with reason "broken symlink"; other non-regular files (devices, pipes) are ignored. Track `3/` reads as 3,
+  track `0` is reported as an invalid value, sorting is not "natural" (`track10` before `track2`).
