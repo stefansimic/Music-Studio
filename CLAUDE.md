@@ -24,6 +24,12 @@ Rules:
   (e.g. `TrackMetadata`, `Genre`, `CoverArt`). Library types never leak through a port.
 - Frontends contain no business logic: they parse input, call a use case, render the result.
   Anything the CLI can do the GUI does through the same use case, and the other way round.
+- **A web client (browser, via a REST API) is a planned third frontend** (ADR 0010). Use cases must stay
+  transport-neutral and HTTP-exposable: request/response records, no hidden state, no UI callbacks beyond
+  `ProgressListener`/`Cancellation`/sink, and every core record expressible in JSON without reflection.
+  HTTP, jobs, auth and path sandboxing live in the web module, never in core. Runs locally first, later on a
+  home-LAN server (plain HTTP, token auth; file upload/download and server folder browsing are required).
+  Stories that add/change a use case must also update `docs/api/openapi.yaml` + a golden-JSON codec test.
 - Adapters are chosen in exactly one place (composition root per frontend). No service locators, no statics.
 - Each format (MP3 now; MP4 video later, maybe FLAC/M4A) is an adapter concern. Core models tags format-neutrally.
 - Tag versions (ID3v1/v1.1, ID3v2.2/2.3/2.4) are user-selectable write options (core type), defaulted by device

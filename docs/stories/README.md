@@ -18,6 +18,13 @@ defined structure — plus a music player with a library.
 | 010 | [GUI: batch tagging workspace](010-gui-batch-tagging.md) | 002–004 | open |
 | 011 | [Library and MP3 player](011-library-and-player.md) | 001 | open |
 | 012 | [Tag and organize MP4 videos (movies, episodes)](012-mp4-video-tagging.md) | 002–004 | open |
+| 013 | REST API, job model, folder browse, upload/download (`api`, `web` modules; [ADR 0010](../adr/0010-web-frontend-and-http-api.md)) – story to be written | 001–004 | idea |
+| 014 | Web client (SPA incl. browser playback) – story to be written | 013 | idea |
+
+**Standing acceptance criterion (all stories that add or change a use case)**: the use case is reachable through the
+API contract ([ADR 0010](../adr/0010-web-frontend-and-http-api.md)) – `docs/api/openapi.yaml` is updated and a
+golden-JSON codec test covers its request/result records. Stories 013/014 deliver the server and client; until then
+the criterion is checked on the contract and codecs only.
 
 **Later / ideas** (not yet stories): video playback in the player · online lookup (MusicBrainz, AcoustID, Cover Art Archive) ·
 tags → filename rename in place · duplicate detection · M3U playlists for devices · volume normalization (MP3Gain-style,
