@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>dev.rs.slava.icxc</groupId>
+  <artifactId>music-studio-parent</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>music-studio-core</module>
+    <module>music-studio-tag-jaudiotagger</module>
+    <module>music-studio-storage</module>
+    <module>music-studio-app</module>
+    <module>music-studio-cli</module>
+  </modules>
+
+  <properties>
+    <maven.compiler.release>25</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jaudiotagger.version>3.0.1</jaudiotagger.version>
+    <picocli.version>4.7.7</picocli.version>
+    <junit.version>5.13.4</junit.version>
+    <assertj.version>3.27.6</assertj.version>
+    <archunit.version>1.4.1</archunit.version>
+    <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+    <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+    <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+    <native-maven-plugin.version>0.11.5</native-maven-plugin.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency><groupId>org.junit</groupId><artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version><type>pom</type><scope>import</scope></dependency>
+      <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-core</artifactId>
+        <version>${project.version}</version></dependency>
+      <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-core</artifactId>
+        <version>${project.version}</version><type>test-jar</type><scope>test</scope></dependency>
+      <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-tag-jaudiotagger</artifactId>
+        <version>${project.version}</version></dependency>
+      <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-storage</artifactId>
+        <version>${project.version}</version></dependency>
+      <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-app</artifactId>
+        <version>${project.version}</version></dependency>
+      <dependency><groupId>net.jthink</groupId><artifactId>jaudiotagger</artifactId>
+        <version>${jaudiotagger.version}</version></dependency>
+      <dependency><groupId>info.picocli</groupId><artifactId>picocli</artifactId>
+        <version>${picocli.version}</version></dependency>
+      <dependency><groupId>info.picocli</groupId><artifactId>picocli-codegen</artifactId>
+        <version>${picocli.version}</version></dependency>
+      <dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version><scope>test</scope></dependency>
+      <dependency><groupId>com.tngtech.archunit</groupId><artifactId>archunit-junit5</artifactId>
+        <version>${archunit.version}</version><scope>test</scope></dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- every module gets the test stack -->
+  <dependencies>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+    <dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
+    <dependency><groupId>com.tngtech.archunit</groupId><artifactId>archunit-junit5</artifactId><scope>test</scope></dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <release>${maven.compiler.release}</release>
+            <parameters>true</parameters>
+            <compilerArgs><arg>-Xlint:all,-processing,-serial</arg></compilerArgs>
+            <failOnWarning>true</failOnWarning>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+          <configuration>
+            <enableAssertions>true</enableAssertions>
+            <argLine>-ea -Duser.language=en -Duser.country=US</argLine>
+            <excludedGroups>large</excludedGroups>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.graalvm.buildtools</groupId><artifactId>native-maven-plugin</artifactId>
+          <version>${native-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version>
+        <executions><execution><id>enforce</id><goals><goal>enforce</goal></goals><configuration><rules>
+          <requireJavaVersion><version>[25,)</version></requireJavaVersion>
+          <requireMavenVersion><version>[3.9,)</version></requireMavenVersion>
+          <dependencyConvergence/>
+          <banDuplicatePomDependencyVersions/>
+        </rules></configuration></execution></executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

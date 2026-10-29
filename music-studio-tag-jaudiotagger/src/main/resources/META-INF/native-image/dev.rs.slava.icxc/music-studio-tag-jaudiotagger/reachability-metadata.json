@@ -1,0 +1,1082 @@
+{
+  "reflection": [
+    {
+      "type": "org.jaudiotagger.audio.asf.io.AsfExtHeaderModifier",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.AsfExtHeaderReader",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.AsfHeaderReader",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.AsfStreamer",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.ChunkContainerReader",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.ChunkHeaderReader",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.ChunkModifier",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.ChunkReader",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.ChunkRemover",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.ContentBrandingReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.ContentDescriptionReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.CountingInputStream",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.CountingOutputstream",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.EncodingChunkReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.EncryptionChunkReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.FileHeaderReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.FullRequestInputStream",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.LanguageListReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.MetadataReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.ModificationResult",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.RandomAccessFileInputstream",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.RandomAccessFileOutputStream",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.StreamBitratePropertiesReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.StreamChunkReader",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.WriteableChunk",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.audio.asf.io.WriteableChunkModifer",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.AbstractDataType",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.AbstractDataTypeList",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.AbstractIntStringValuePair",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.AbstractString",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.AbstractStringStringValuePair",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.AbstractValuePair",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.BooleanByte",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.BooleanString",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.ByteArraySizeTerminated",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.datatype.ByteArraySizeTerminated"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.DataTypes",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.EventTimingCode",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.EventTimingCodeList",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.HashMapInterface",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.ID3v2LyricLine",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.Lyrics3Image",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.Lyrics3Line",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.Lyrics3TimeStamp",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.MultipleTextEncodedStringNullTerminated",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.NumberFixedLength",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.NumberHashMap",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.datatype.NumberHashMap"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.NumberVariableLength",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.Pair",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.PairedTextEncodedStringNullTerminated",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.PartOfSet",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.datatype.PartOfSet"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.StringDate",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.StringDateTime",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.StringFixedLength",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.StringHashMap",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.datatype.StringHashMap"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.StringNullTerminated",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.datatype.StringNullTerminated"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.StringSizeTerminated",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.SynchronisedTempoCode",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.SynchronisedTempoCodeList",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.TCONString",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.datatype.TCONString"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.TempoCode",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.TextEncodedStringNullTerminated",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.datatype.TextEncodedStringNullTerminated"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.datatype.TextEncodedStringSizeTerminated",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.datatype.TextEncodedStringSizeTerminated"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AbstractID3Tag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AbstractID3v1Tag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AbstractID3v2Frame",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AbstractID3v2Tag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AbstractTag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AbstractTagFrame",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AbstractTagFrameBody",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AbstractTagItem",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.AggregatedFrame",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3Compression",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3Frames",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3SyncSafeInteger",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3Tags",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3TextEncodingConversion",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3Unsynchronization",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v11Tag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v1FieldKey",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v1Iterator",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v1Tag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v1TagField",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v22FieldKey",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v22Frame",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v22Frames",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v22PreferredFrameOrderComparator",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v22Tag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v23FieldKey",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v23Frame",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v23Frames",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v23PreferredFrameOrderComparator",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v23Tag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v24FieldKey",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v24Frame",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v24Frames",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v24PreferredFrameOrderComparator",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v24Tag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.ID3v2ChapterFrames",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.Id3FieldType",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.Id3SupportingTag",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.TyerTdatAggregatedFrame",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.AbstractFrameBodyNumberTotal",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.AbstractFrameBodyPairs",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.AbstractFrameBodyTextInfo",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.AbstractFrameBodyUrlLink",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.AbstractID3v2FrameBody",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyAENC",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyASPI",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyCHAP",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyCOMM",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyCOMM"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyCOMR",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyCRM",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyCTOC",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyDeprecated",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyENCR",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyEQU2",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyEQUA",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyETCO",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyEncrypted",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyGEOB",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyGRID",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyGRP1",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyIPLS",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyLINK",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyMCDI",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyMLLT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyMVIN",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyMVNM",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyOWNE",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyPCNT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyPIC",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyPOPM",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyPOSS",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyPRIV",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyRBUF",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyRVA2",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyRVAD",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyRVRB",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodySEEK",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodySIGN",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodySYLT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodySYTC",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTALB",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTALB"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTBPM",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTCMP",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTCOM",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTCON",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTCON"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTCOP",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTDAT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTDEN",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTDLY",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTDOR",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTDRC",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTYER"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTDRL",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTDTG",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTENC",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTEXT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTFLT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTIME",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTIPL",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTIT1",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTIT2",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTIT2"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTIT3",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTKEY",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTLAN",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTLEN",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTMCL",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTMED",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTMOO",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTOAL",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTOFN",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTOLY",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTOPE",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTORY",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTOWN",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTPE1",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTPE1"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTPE2",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTPE2"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTPE3",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTPE4",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTPOS",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTPOS"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTPRO",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTPUB",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTRCK",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTRCK"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTRDA",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTRSN",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTRSO",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSIZ",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSO2",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSOA",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSOC",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSOP",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSOT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSRC",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSSE",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTSST",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTXXX",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyTYER",
+      "allDeclaredConstructors": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.jaudiotagger.tag.id3.framebody.FrameBodyTYER"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyUFID",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyUSER",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyUSLT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyUnsupported",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWCOM",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWCOP",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWOAF",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWOAR",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWOAS",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWORS",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWPAY",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWPUB",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyWXXX",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyXSOA",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyXSOP",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.FrameBodyXSOT",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.ID3v22FrameBody",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.ID3v23FrameBody",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.ID3v24FrameBody",
+      "allDeclaredConstructors": true
+    },
+    {
+      "type": "org.jaudiotagger.tag.id3.framebody.ID3v2ChapterFrameBody",
+      "allDeclaredConstructors": true
+    }
+  ]
+}

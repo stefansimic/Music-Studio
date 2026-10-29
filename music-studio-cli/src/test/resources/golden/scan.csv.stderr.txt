@@ -1,0 +1,4 @@
+skipped: hidden /music/.cache
+skipped: hidden /music/._02.mp3
+warning: cannot read directory /music/locked
+completed: 10 found, 9 read, 1 unreadable, 3 ignored

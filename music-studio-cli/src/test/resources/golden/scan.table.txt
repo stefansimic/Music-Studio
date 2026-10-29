@@ -1,0 +1,21 @@
+PATH                                      TITLE                         ARTIST                  ALBUM ARTIST        ALBUM                     TRACK   DISC   YEAR   GENRE           COMMENT               COVER  TIME   KBPS  TAGS               DIFFERS
+----------------------------------------  ----------------------------  ----------------------  ------------------  ------------------------  ------  -----  -----  --------------  --------------------  -----  -----  ----  -----------------  -------
+Album/01 - café.mp3                       Café au lait                  Artist Latin1           Album Artist        Album Latin1              3/12    1/2    2005   Jazz            A comment             no     0:01   128   ID3v2.3
+Album/02 - Ђорђе.mp3                      čćšžđ                         Ђорђе Балашевић                             Музика 🎵                                 2012                                         no     0:01   128   ID3v2.3
+Album/03 - strict.mp3                     A title that is definitely …  Ђорђе Балашевић*                            Album Šumadija*           2/10           2010   Rock                                  no     0:01   128   ID3v1.1 + ID3v2.3  title,artist,album
+Album/04 - differs.mp3                    Same Title                    Artist Two*                                                           1/10           2015                                         no     0:01   128   ID3v1.1 + ID3v2.3  artist
+Album/05 - genres.mp3                     Title UTF-8 ñ                 Artist v24                                  Album v24                 5              2020   Rock; Pop                             no     0:01   128   ID3v2.4
+Album/06 - cover.mp3                      With Cover                                                                                                                                                      yes    0:01   128   ID3v2.3
+Album/07 - bad track.mp3                  Bad Track                                                                                                                                                       no     0:01   128   ID3v2.3
+no tags.mp3                                                                                                                                                                                               no     0:01   128   none
+Weird, "name".mp3                         Title v1.1                    Artist v1.1                                 Album v1.1                7              2001   Rock            Comment v1.1          no     0:01   128   ID3v1.1
+broken.mp3                                ERROR: CORRUPT: not a readable MP3 file: /music/broken.mp3
+
+COMPLETED: 10 files found, 9 read, 1 unreadable, 3 ignored (jpg: 2, txt: 1)
+
+Skipped (not scanned):
+  hidden  .cache
+  hidden  ._02.mp3
+
+Problems:
+  WARNING  cannot read directory /music/locked

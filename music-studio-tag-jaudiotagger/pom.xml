@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>dev.rs.slava.icxc</groupId>
+    <artifactId>music-studio-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>music-studio-tag-jaudiotagger</artifactId>
+
+  <dependencies>
+    <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-core</artifactId></dependency>
+    <dependency><groupId>net.jthink</groupId><artifactId>jaudiotagger</artifactId></dependency>
+    <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-core</artifactId>
+      <type>test-jar</type><scope>test</scope></dependency>
+  </dependencies>
+</project>

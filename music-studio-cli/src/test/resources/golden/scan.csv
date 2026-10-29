@@ -1,0 +1,11 @@
+path,title,artist,albumartist,album,track,disc,year,genre,comment,cover,duration_ms,bitrate_kbps,tags,differs,error
+/music/Album/01 - café.mp3,Café au lait,Artist Latin1,Album Artist,Album Latin1,3/12,1/2,2005,Jazz,A comment,no,1000,128,ID3v2.3,,
+/music/Album/02 - Ђорђе.mp3,čćšžđ,Ђорђе Балашевић,,Музика 🎵,,,2012,,,no,1000,128,ID3v2.3,,
+/music/Album/03 - strict.mp3,A title that is definitely longer than thirty characters,Ђорђе Балашевић,,Album Šumadija,2/10,,2010,Rock,,no,1000,128,ID3v1.1 + ID3v2.3,"title,artist,album",
+/music/Album/04 - differs.mp3,Same Title,Artist Two,,,1/10,,2015,,,no,1000,128,ID3v1.1 + ID3v2.3,artist,
+/music/Album/05 - genres.mp3,Title UTF-8 ñ,Artist v24,,Album v24,5,,2020,Rock; Pop,,no,1000,128,ID3v2.4,,
+/music/Album/06 - cover.mp3,With Cover,,,,,,,,,yes,1000,128,ID3v2.3,,
+/music/Album/07 - bad track.mp3,Bad Track,,,,,,,,,no,1000,128,ID3v2.3,,
+/music/no tags.mp3,,,,,,,,,,no,1000,128,none,,
+"/music/Weird, ""name"".mp3",Title v1.1,Artist v1.1,,Album v1.1,7,,2001,Rock,Comment v1.1,no,1000,128,ID3v1.1,,
+/music/broken.mp3,,,,,,,,,,,,,,,CORRUPT: not a readable MP3 file: /music/broken.mp3

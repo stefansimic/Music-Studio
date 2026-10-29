@@ -104,11 +104,11 @@ above it in this table.
 |---|---|---|
 | `contract` | `Require` (always-on preconditions) | skeleton |
 | `text` | `Transliterator` (Serbian Cyrillic → Gaj Latin → ASCII), `Id3v1Text` (fit to N bytes), `FileNameSanitizer`, `NamingRules` | 001/004 |
-| `model` | `MediaFormat`, `Field`, `FieldType`, `FieldValue` (+ `Text`, `YearValue`, `Position`, `Genres`), `Genre`, `MediaMetadata`, `TagFamily`, `TagVersion`, `TagLayer`, `TagReadResult`, `StreamInfo`, `CoverInfo`, `CoverArt`, `PictureType`, `FileFingerprint`, `Issue`, `Severity`, `IssueCode`, `PathOrder`, `V1Comparison`, `Id3v1Genres` (genre table is domain data) | 001 |
+| `model` | `MediaFormat`, `Field`, `FieldType`, `FieldValue` (+ `Text`, `YearValue`, `Position`, `Genres`), `Genre`, `MediaMetadata`, `TagFamily`, `TagVersion`, `TagLayer`, `TagReadResult`, `StreamInfo`, `CoverInfo`, `CoverArt`, `PictureType`, `FileFingerprint`, `SkippedEntry`, `SkipReason`, `Issue`, `Severity`, `IssueCode`, `PathOrder`, `V1Comparison`, `Id3v1Genres` (genre table is domain data) | 001 |
 | `tag` | `TagWriteOptions`, `Id3v2Choice`, `Id3v1Choice`, `V2Encoding`, `V1TextMode`, `FormatCapabilities`, `TagWriteRequest`, `FieldChanges`, `CoverChange`, `Id3v1Values`, `Id3v1Projection`, `WriteVerifier` | 003 |
 | `pattern` | `InputPattern`, `OutputPattern`, `PatternSegment`, `Token` (+ `Literal`, `Placeholder`, `Wildcard`), `NumberFormat`, `PatternParser`, `PatternParseResult`, `PatternError`, `PathMatcher`, `MatchResult`, `PathRenderer`, `RenderResult` | 002/004 |
 | `task` | `Cancellation`, `CancellationSource`, `OperationCancelledException`, `ProgressListener`, `ProgressEvent`, `ByteProgress` | 001 |
-| `port` | `MediaFileSource`, `ListingOptions`, `DirectoryListing`, `SkippedEntry`, `SkipReason`, `TagReader`, `TagWriter`, `ExportTarget`, `StoreInfo`, `ExportJournalStore`, `ExportJournal`, `JournalEntry`, `MediaAccessException`, `StoreException`; later `ProfileStore`, `PresetStore`, `GenreStore`, `LibraryIndexStore`, `ImageTranscoder`, `PlaybackEngine` | 001–011 |
+| `port` | `MediaFileSource`, `ListingOptions`, `DirectoryListing`, `TagReader`, `TagWriter`, `ExportTarget`, `StoreInfo`, `ExportJournalStore`, `ExportJournal`, `JournalEntry`, `MediaAccessException`, `StoreException`; later `ProfileStore`, `PresetStore`, `GenreStore`, `LibraryIndexStore`, `ImageTranscoder`, `PlaybackEngine` | 001–011 |
 | `scan` | `ScanMediaUseCase`, `ScanRequest`, `ScanItem` (`ScannedFile`, `UnreadableFile`), `ScanSummary`, `ScanStatus`, `ScanMediaService` | 001 |
 | `extract` | `ProposeMetadataUseCase`, `ProposeRequest`, `ExtractionSpec`, `FieldOverride`, `MergeMode`, `AutoNumbering`, `ManualEdits`, `FieldEdit`, `Proposal`, `ProposalSet`, `MatchStatus`, `FieldChange`, `ChangeOrigin`, `ProposeMetadataService` | 002 |
 | `export` | `WriteOptionsUseCase`, `PlanExportUseCase`, `ApplyExportUseCase`, `UndoExportUseCase`, `ExportSpec`, `CollisionPolicy`, `PlanExportRequest`, `ExportPlan`, `PlannedFile`, `PlannedAction`, `SpaceEstimate`, `ExportId`, `ExportReport`, `ExportStatus`, `UndoPlan`, `UndoStep`, `UndoReport`, `ExportSummary`, `*Service`, `CollisionResolver` | 003/004 |
@@ -454,14 +454,16 @@ public interface MediaFileSource {
      * <p><b>Postconditions/Guarantees:</b>
      * <ul>
      *   <li>{@code files} contains every regular file directly in {@code root} and, if {@code options.recursive()},
-     *       in all subdirectories – absolute, normalised, unique, each starting with {@code root}.</li>
+     *       in all subdirectories – absolute, normalised, unique, each starting with {@code root}. All file types are listed;
+     *       filtering by format is the caller's job.</li>
      *   <li>Symbolic links to regular files are included (as the link path). Symbolic links to directories are
      *       <em>not</em> followed (no loops, no escaping the tree).</li>
      *   <li>If {@code !options.includeHidden()}: entries whose name starts with "." (and, on Windows, entries with the
      *       hidden attribute) are not listed and not descended into; each one is recorded once in {@code skipped}
-     *       with reason HIDDEN (a hidden directory as one entry, its content is not enumerated).</li>
+     *       with reason HIDDEN (a hidden directory as one entry, its content is not enumerated). This applies to every
+     *       entry found in a listed directory, also in a non-recursive listing.</li>
      *   <li>Symbolic links to directories are recorded in {@code skipped} with reason DIRECTORY_SYMLINK; excluded
-     *       directories with reason EXCLUDED.</li>
+     *       directories with reason EXCLUDED (only when the listing is recursive, because only then would they be entered).</li>
      *   <li>Directories in {@code options.excludedDirectories()} (and their content) are skipped.</li>
      *   <li>A subdirectory that cannot be read is reported once as {@code LISTING_ACCESS_DENIED} (WARNING) in
      *       {@code issues}; listing continues.</li>
@@ -494,6 +496,8 @@ public interface MediaFileSource {
 public record ListingOptions(boolean recursive, boolean includeHidden, Set<Path> excludedDirectories) {}
 /** files, skipped: absolute, no nulls, unique, disjoint; issues: no nulls. */
 public record DirectoryListing(Path root, List<Path> files, List<SkippedEntry> skipped, List<Issue> issues) {}
+
+// In core.model, not core.port: ScanSummary exposes them to the frontends, which may not use core.port (rule A9).
 /** A file or directory deliberately not scanned. path absolute. */
 public record SkippedEntry(Path path, SkipReason reason) {}
 public enum SkipReason { HIDDEN, DIRECTORY_SYMLINK, EXCLUDED }
@@ -1444,6 +1448,10 @@ public interface ByteProgress { ByteProgress NONE; void onBytes(long done, long 
   parallel reading with ordered emission can be added to scans later without changing the API.
 - jaudiotagger's global `TagOptionSingleton` is set only inside the adapter, under a lock held for the whole
   `writeCopy`/`preflight` call.
+- jaudiotagger is not thread-safe even for **reads**: it has process-wide mutable state, and concurrent reads of
+  different files return wrong durations and audio offsets (reproduced with plain library calls, no project code).
+  The adapter therefore runs every library call under one static lock (`LibraryLock`); the writer of story 003 must
+  use the same lock. The reader contract test (8 threads x all fixtures) guards this.
 
 ## 13. Persistence and application directories
 
@@ -1508,7 +1516,8 @@ Large-file MP4 tests (012) are tagged `@Tag("large")` and run in Failsafe, not o
 
 Rules are defined once in `…core.testkit.arch.ArchitectureRules` (test-jar). Each module has a small
 `ArchitectureTest` that applies the rules relevant to it.
-Analysed package: `dev.rs.slava.icxc.musicstudio`; test classes are excluded.
+Analysed package: `dev.rs.slava.icxc.musicstudio`; test classes are excluded by the shared import option
+`ProductionClassesOnly`, which also leaves out the core `-tests.jar` that downstream modules have on their classpath.
 
 | # | Rule | Checked in |
 |---|---|---|
@@ -1516,7 +1525,7 @@ Analysed package: `dev.rs.slava.icxc.musicstudio`; test classes are excluded.
 | A2 | `core..` does not use `java.nio.file.Files`, `java.io.File*`, `RandomAccessFile`, `java.nio.channels..`, `java.net..`, `java.awt..`, `javax..`, `java.sql..`, `java.util.logging..`, `java.lang.reflect..`, `Class.forName`, `System.out/err`, `Path.toFile`, `Path.toRealPath` | core |
 | A3 | Core layering as in §3 (`contract` ← `text` ← `model` ← `tag`/`pattern`/`task` ← `port` ← `scan` ← `extract` ← `export` ← later features) | core |
 | A4 | `core.port` contains only interfaces, records, enums and the two exception classes | core |
-| A5 | In `core.model`, `core.tag`, `core.pattern`, `core.task` every class is a record, enum, interface, or `final` class with only `static final` fields | core |
+| A5 | In `core.model`, `core.tag`, `core.pattern` every class is a record, enum, interface, or `final` class with only `static final` fields. In `core.task` every class is a record, enum, interface or `final` class (`CancellationSource` holds an `AtomicBoolean`, §12) | core |
 | A6 | All fields in `core..` are `final` | core |
 | A7 | Classes named `*Service` are `final`, public, implement exactly one `*UseCase` interface, and are only referenced from `core..` (tests) and `app..` | core + every module |
 | A8 | Adapters (`tag..`, `storage..`, `image..`, `player..`) do not depend on each other, on `app..`, `cli..`, `gui..`, or on `*Service` | each adapter |
@@ -1743,8 +1752,12 @@ dependencies (inherited from the parent).
 ```
 
 - picocli's annotation processor generates the picocli reflection config at compile time.
-- jaudiotagger's metadata is produced once with the tracing agent while running the adapter's integration tests.
-  It is committed to `music-studio-tag-jaudiotagger/src/main/resources/META-INF/native-image/dev.rs.slava.icxc/music-studio-tag-jaudiotagger/reachability-metadata.json`
+- jaudiotagger's metadata is produced by `music-studio-tag-jaudiotagger/native-image-metadata/generate-reachability-metadata.sh`:
+  the tracing agent output (JVM CLI run over varied files) merged with an enumeration of the classes jaudiotagger
+  creates by name or copies through copy constructors (all `FrameBody*`, data types, frames/tags, ASF chunk readers).
+  The agent alone is not enough: it only sees the frame types of the files it ran on, and a real file with another
+  frame would fail in the native binary. `music-studio-cli/src/test/native/scan-smoke.sh` runs the native binary
+  against a reviewed JSON snapshot. The result is committed to `music-studio-tag-jaudiotagger/src/main/resources/META-INF/native-image/dev.rs.slava.icxc/music-studio-tag-jaudiotagger/reachability-metadata.json`
   (single-file format of GraalVM for JDK 23+).
 - Assertions are **off** in the shipped native image (they would need `-ea` at build time). Preconditions stay
   active through `Require`. An optional `native-test` run (`mvn -Pnative test`) builds the tests natively with `-ea`.

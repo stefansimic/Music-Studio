@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>dev.rs.slava.icxc</groupId>
+    <artifactId>music-studio-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>music-studio-cli</artifactId>
+
+  <dependencies>
+    <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-app</artifactId></dependency>
+    <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-core</artifactId></dependency>
+    <dependency><groupId>info.picocli</groupId><artifactId>picocli</artifactId></dependency>
+    <dependency><groupId>${project.groupId}</groupId><artifactId>music-studio-core</artifactId>
+      <type>test-jar</type><scope>test</scope></dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path><groupId>info.picocli</groupId><artifactId>picocli-codegen</artifactId>
+              <version>${picocli.version}</version></path>
+          </annotationProcessorPaths>
+        </configuration>
+        <executions>
+          <!-- the picocli processor needs the project name for its native-image config, but only for main classes -->
+          <execution>
+            <id>default-compile</id>
+            <configuration>
+              <compilerArgs combine.children="append">
+                <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+              </compilerArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!-- GraalVM native image: mvn -Pnative -pl music-studio-cli -am package  (needs GraalVM JDK 25; builds for this OS) -->
+    <profile>
+      <id>native</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.graalvm.buildtools</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <executions>
+              <execution>
+                <id>build-native</id>
+                <goals><goal>compile-no-fork</goal></goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <imageName>musicstudio</imageName>
+              <mainClass>dev.rs.slava.icxc.musicstudio.cli.CliMain</mainClass>
+              <buildArgs>
+                <buildArg>-march=compatibility</buildArg>
+                <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+              </buildArgs>
+              <agent><enabled>false</enabled></agent>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
