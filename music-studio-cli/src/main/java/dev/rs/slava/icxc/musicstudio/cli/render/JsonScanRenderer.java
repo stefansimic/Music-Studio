@@ -97,7 +97,7 @@ public final class JsonScanRenderer implements ScanRenderer {
                 + ", \"issues\": " + issues(List.of(file.error())) + "}";
     }
 
-    private static String fields(MediaMetadata metadata) {
+    static String fields(MediaMetadata metadata) {
         List<String> entries = new ArrayList<>();
         for (Field field : Field.values()) {
             metadata.get(field).ifPresent(value -> entries.add(Json.quote(field.placeholder()) + ": " + value(value)));
@@ -105,7 +105,7 @@ public final class JsonScanRenderer implements ScanRenderer {
         return "{" + String.join(", ", entries) + "}";
     }
 
-    private static String value(FieldValue value) {
+    static String value(FieldValue value) {
         return switch (value) {
             case FieldValue.Text text -> Json.quote(text.value());
             case FieldValue.YearValue year -> Integer.toString(year.year());
@@ -127,7 +127,7 @@ public final class JsonScanRenderer implements ScanRenderer {
                 + ", \"sizeBytes\": " + cover.sizeBytes() + "}";
     }
 
-    private static String issues(List<Issue> issues) {
+    static String issues(List<Issue> issues) {
         List<String> entries = new ArrayList<>();
         for (Issue issue : issues) {
             entries.add("{\"severity\": " + Json.quote(issue.severity().name())

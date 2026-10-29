@@ -36,6 +36,7 @@ public final class MusicStudioCommand implements Runnable {
         Require.nonNull(err, "err");
         CommandLine commandLine = new CommandLine(new MusicStudioCommand());
         commandLine.addSubcommand("scan", new ScanCommand(studio.scan(), cancel));
+        commandLine.addSubcommand("extract", new ExtractCommand(studio.scan(), studio.proposeMetadata(), cancel));
         commandLine.setCaseInsensitiveEnumValuesAllowed(true);
         commandLine.setOut(out);
         commandLine.setErr(err);

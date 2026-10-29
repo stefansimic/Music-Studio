@@ -54,8 +54,8 @@ public final class WriteVerifier {
                         + v2.map(l -> l.version().label()).orElse("no ID3v2 tag")));
             } else {
                 for (Field field : writable) {
-                    Optional<FieldValue> want = expectedV2.get(field);
-                    Optional<FieldValue> got = v2.get().metadata().get(field);
+                    Optional<FieldValue> want = expectedV2.get(field).filter(v -> !isZeroPosition(v));
+                    Optional<FieldValue> got = v2.get().metadata().get(field).filter(v -> !isZeroPosition(v));
                     if (!want.equals(got)) {
                         issues.add(mismatch(field.placeholder() + " is '" + got.map(FieldValue::display).orElse("")
                                 + "' but should be '" + want.map(FieldValue::display).orElse("") + "'").forField(field));
@@ -105,6 +105,11 @@ public final class WriteVerifier {
             issues.add(mismatch("an ID3v1 tag is still present"));
         }
         return List.copyOf(issues);
+    }
+
+    /** A track or disc number 0 is stored but read back as "not set", so it is the same as no value. */
+    private static boolean isZeroPosition(FieldValue value) {
+        return value instanceof FieldValue.Position position && position.number() == 0;
     }
 
     /** ID3v1 bytes are compared, not strings: the reader decodes them as ISO-8859-1 whatever codepage was written. */

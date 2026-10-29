@@ -31,7 +31,10 @@ class FieldValueTest {
         assertThat(new FieldValue.Position(3, OptionalInt.of(12)).display()).isEqualTo("3/12");
         assertThat(new FieldValue.Position(3, OptionalInt.empty()).display()).isEqualTo("3");
         assertThat(new FieldValue.Position(13, OptionalInt.of(12)).display()).isEqualTo("13/12");
-        assertThatThrownBy(() -> new FieldValue.Position(0, OptionalInt.empty()))
+        assertThat(new FieldValue.Position(0, OptionalInt.empty()).display()).isEqualTo("0"); // intro track
+        assertThatThrownBy(() -> new FieldValue.Position(-1, OptionalInt.empty()))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new FieldValue.Position(10_000, OptionalInt.empty()))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new FieldValue.Position(1, OptionalInt.of(0)))
                 .isInstanceOf(IllegalArgumentException.class);

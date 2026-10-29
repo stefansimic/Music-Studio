@@ -19,15 +19,15 @@ The pattern changes from batch to batch; defining it must be quick.
   (also `03`, `3of12`, `3/12`).
 
 ## Acceptance criteria
-- [ ] Given files and a pattern, when I preview, then I see per file the extracted value for every placeholder.
-- [ ] Files that don't match the pattern are clearly marked as "no match" with the reason; they are never written.
-- [ ] Ambiguous matches (e.g. artist itself contains ` - `) are marked "ambiguous" and show the chosen split;
+- [x] Given files and a pattern, when I preview, then I see per file the extracted value for every placeholder.
+- [x] Files that don't match the pattern are clearly marked as "no match" with the reason; they are never written.
+- [x] Ambiguous matches (e.g. artist itself contains ` - `) are marked "ambiguous" and show the chosen split;
       the user can accept or fix them (GUI) or they are skipped (CLI unless `--accept-ambiguous`).
-- [ ] Besides the pattern, a field can get a **fixed value** for all files (e.g. `genre=Balkan`, `albumartist=Various Artists`).
-- [ ] A field can be **kept from the existing tag** instead.
-- [ ] Merge mode per run: `fill-empty` (only set empty fields) or `overwrite` (default: overwrite).
-- [ ] Track numbers can be **auto-numbered** by sort order (filename or existing tag order) when not in the name.
-- [ ] Extraction itself writes nothing; it produces a proposed change set used by 003/004.
+- [x] Besides the pattern, a field can get a **fixed value** for all files (e.g. `genre=Balkan`, `albumartist=Various Artists`).
+- [x] A field can be **kept from the existing tag** instead.
+- [x] Merge mode per run: `fill-empty` (only set empty fields) or `overwrite` (default: overwrite).
+- [x] Track numbers can be **auto-numbered** by sort order (filename or existing tag order) when not in the name.
+- [x] Extraction itself writes nothing; it produces a proposed change set used by 003/004.
 
 ## Edge cases
 - Extra spaces, double separators, separator missing in a few files

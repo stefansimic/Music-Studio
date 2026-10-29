@@ -931,6 +931,12 @@ public record ScanSummary(Path root, ScanStatus status, int found, int read, int
 
 ### 7.2 `ProposeMetadataUseCase` (002; extended by 005, 008, 009) – full contract
 
+> **Status (story 002):** implemented as below, with these details: `FieldChange` is `ProposedChange`; a NO_MATCH file gets
+> nothing (no fixed value, number or edit); `FieldValue.Position` allows 0; matching follows ADR 0012 (NFC, code points,
+> ASCII digits, shortest-first, ambiguity = distinct capture boundaries). The parser handles input **and** output patterns
+> (the renderer, `FileNameSanitizer` and `NamingRules` come with story 004). The CLI `extract` command is a preview with no
+> write option.
+
 ```java
 /**
  * Computes the proposed final metadata for a batch: pattern extraction, fixed values, keep-existing, merge mode,
@@ -984,10 +990,11 @@ public sealed interface FieldEdit { record Set(FieldValue value) implements Fiel
 
 public enum MatchStatus { NO_PATTERN, MATCHED, AMBIGUOUS, AMBIGUOUS_ACCEPTED, NO_MATCH }
 public enum ChangeOrigin { PATTERN, FIXED, AUTO_NUMBER, MANUAL }   // 005: CLEANUP, 008: GENRE_MAP
-public record FieldChange(Field field, Optional<FieldValue> before, Optional<FieldValue> after, ChangeOrigin origin) {}
+public record ProposedChange(Field field, Optional<FieldValue> before, Optional<FieldValue> after, ChangeOrigin origin) {}
+// (named ProposedChange because tag.FieldChange from story 003 already exists)
 
 public record Proposal(ScannedFile file, MatchStatus status, Optional<String> matchDetail,
-                       Map<Field, String> extracted, MediaMetadata proposed, List<FieldChange> changes,
+                       Map<Field, String> extracted, MediaMetadata proposed, List<ProposedChange> changes,
                        List<Issue> issues) {
     public MediaMetadata existing();   // = file.tags().effective()
     public boolean exportable();

@@ -39,4 +39,22 @@ class CoreArchitectureTest {
 
     @ArchTest
     static final ArchRule x04Export = ArchitectureRules.X04_EXPORT_DEPENDS_ONLY_ON_LOWER_LAYERS;
+
+    @ArchTest
+    static final ArchRule d02 = ArchitectureRules.D02_PATTERN_AND_EXTRACT_HAVE_NO_WRITE_PATH;
+
+    @ArchTest
+    static final ArchRule d08Pattern = ArchitectureRules.D08_PATTERN_DEPENDS_ONLY_ON_LOWER_LAYERS;
+
+    @ArchTest
+    static final ArchRule d08Extract = ArchitectureRules.D08_EXTRACT_DEPENDS_ONLY_ON_LOWER_LAYERS;
+
+    @ArchTest
+    static final ArchRule x04NotExport = ArchitectureRules.X04_PATTERN_AND_EXTRACT_DO_NOT_USE_EXPORT;
+
+    @ArchTest
+    static final ArchRule x04Shapes = ArchitectureRules.X04_EXTRACT_HOLDS_ONLY_VALUE_SHAPES_AND_THE_SERVICE;
+
+    @ArchTest
+    static final ArchRule x04NoSetters = ArchitectureRules.X04_NO_SETTERS_IN_PATTERN_AND_EXTRACT;
 }

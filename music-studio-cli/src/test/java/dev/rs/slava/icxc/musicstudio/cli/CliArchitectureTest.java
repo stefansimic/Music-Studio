@@ -24,4 +24,7 @@ class CliArchitectureTest {
 
     @ArchTest
     static final ArchRule x04 = ArchitectureRules.X04_JAUDIOTAGGER_ADAPTER_ONLY_USED_BY_APP;
+
+    @ArchTest
+    static final ArchRule d05 = ArchitectureRules.D05_EXTRACT_COMMAND_HAS_NO_WRITE_PATH;
 }

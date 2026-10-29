@@ -6,6 +6,7 @@ import static com.tngtech.archunit.core.domain.JavaClass.Predicates.simpleNameEn
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -148,6 +149,100 @@ public final class ArchitectureRules {
                     "java.lang.annotation", "java.lang.invoke", "java.lang.runtime", "java.util..", "java.time..",
                     "java.nio.file")
             .allowEmptyShould(true);
+
+    private static final String[] JDK_BASICS = {"java.lang", "java.lang.annotation", "java.lang.invoke",
+            "java.lang.runtime", "java.util..", "java.time..", "java.text", "java.nio.file"};
+
+    /**
+     * D02: the given packages have no write path: no ports, no tag/export classes, no file I/O ({@code java.io},
+     * {@code Files}, channels) and no {@code java.util.regex} (the matcher is hand written, ADR 0012).
+     */
+    public static ArchRule noWritePath(String... packages) {
+        return noClasses().that().resideInAnyPackage(packages)
+                .should().dependOnClassesThat().resideInAnyPackage(CORE_PORT, ROOT + ".core.tag..",
+                        ROOT + ".core.export..", "java.io..", "java.nio.channels..", "java.util.regex..")
+                .orShould().dependOnClassesThat().belongToAnyOf(Files.class)
+                .allowEmptyShould(true);
+    }
+
+    /** D02: {@code core.pattern} and {@code core.extract} have no write path. */
+    public static final ArchRule D02_PATTERN_AND_EXTRACT_HAVE_NO_WRITE_PATH =
+            noWritePath(ROOT + ".core.pattern..", ROOT + ".core.extract..");
+
+    /** D08/X04: {@code core.pattern} depends only on contract, model, text and itself (above text/model, below scan). */
+    public static final ArchRule D08_PATTERN_DEPENDS_ONLY_ON_LOWER_LAYERS = classes().that()
+            .resideInAPackage(ROOT + ".core.pattern..")
+            .should().onlyDependOnClassesThat().resideInAnyPackage(concat(JDK_BASICS, ROOT + ".core.pattern..",
+                    ROOT + ".core.contract..", ROOT + ".core.model..", ROOT + ".core.text.."))
+            .allowEmptyShould(true);
+
+    /** D08/X04: {@code core.extract} depends only on contract, model, text, pattern, scan and itself (no port, no export). */
+    public static final ArchRule D08_EXTRACT_DEPENDS_ONLY_ON_LOWER_LAYERS = classes().that()
+            .resideInAPackage(ROOT + ".core.extract..")
+            .should().onlyDependOnClassesThat().resideInAnyPackage(concat(JDK_BASICS, ROOT + ".core.extract..",
+                    ROOT + ".core.contract..", ROOT + ".core.model..", ROOT + ".core.text..", ROOT + ".core.pattern..",
+                    ROOT + ".core.scan..", ROOT + ".core.task.."))
+            .allowEmptyShould(true);
+
+    /** X04: nothing below {@code export} may use {@code export} (it may use {@code extract}, not the reverse). */
+    public static final ArchRule X04_PATTERN_AND_EXTRACT_DO_NOT_USE_EXPORT = noClasses().that()
+            .resideInAnyPackage(ROOT + ".core.pattern..", ROOT + ".core.extract..")
+            .should().dependOnClassesThat().resideInAPackage(ROOT + ".core.export..").allowEmptyShould(true);
+
+    /** X04: the extract package holds records, enums, interfaces and the final service (with its private helpers). */
+    public static final ArchRule X04_EXTRACT_HOLDS_ONLY_VALUE_SHAPES_AND_THE_SERVICE = classes().that()
+            .resideInAPackage(ROOT + ".core.extract..").should(beValueShapeOrTheService()).allowEmptyShould(true);
+
+    /** X04: no setters in {@code pattern} and {@code extract}. */
+    public static final ArchRule X04_NO_SETTERS_IN_PATTERN_AND_EXTRACT = noMethods().that()
+            .areDeclaredInClassesThat().resideInAnyPackage(ROOT + ".core.pattern..", ROOT + ".core.extract..")
+            .and(new DescribedPredicate<com.tngtech.archunit.core.domain.JavaMethod>("take at least one parameter") {
+                @Override
+                public boolean test(com.tngtech.archunit.core.domain.JavaMethod method) {
+                    return !method.getRawParameterTypes().isEmpty();
+                }
+            })
+            .should().haveNameMatching("set[A-Z].*").allowEmptyShould(true);
+
+    /**
+     * D05: the extract command and its renderers have no write path: they depend on no export, port or tag class and
+     * not on {@code Files}. (They cannot write; the command only offers a preview.)
+     */
+    public static final ArchRule D05_EXTRACT_COMMAND_HAS_NO_WRITE_PATH = noClasses().that()
+            .resideInAPackage(ROOT + ".cli..").and().haveSimpleNameContaining("Extract")
+            .should().dependOnClassesThat().resideInAnyPackage(ROOT + ".core.export..", CORE_PORT, ROOT + ".core.tag..",
+                    "java.nio.channels..")
+            .orShould().dependOnClassesThat().belongToAnyOf(Files.class, File.class, RandomAccessFile.class,
+                    FileInputStream.class, FileOutputStream.class, FileReader.class, FileWriter.class)
+            .allowEmptyShould(true);
+
+    private static String[] concat(String[] first, String... more) {
+        List<String> all = new ArrayList<>(List.of(first));
+        all.addAll(List.of(more));
+        return all.toArray(String[]::new);
+    }
+
+    private static ArchCondition<JavaClass> beValueShapeOrTheService() {
+        return new ArchCondition<>("be a record, enum, interface, or the final *Service (or a class nested in it)") {
+            @Override
+            public void check(JavaClass javaClass, ConditionEvents events) {
+                if (javaClass.getModifiers().contains(JavaModifier.SYNTHETIC) || javaClass.isInterface()
+                        || javaClass.isEnum() || javaClass.isRecord()) {
+                    return;
+                }
+                JavaClass outer = javaClass;
+                while (outer.getEnclosingClass().isPresent()) {
+                    outer = outer.getEnclosingClass().get();
+                }
+                boolean service = outer.getSimpleName().endsWith("Service")
+                        && outer.getModifiers().contains(JavaModifier.FINAL);
+                if (!service) {
+                    events.add(SimpleConditionEvent.violated(javaClass,
+                            javaClass.getName() + " is neither a record/enum/interface nor part of the final service"));
+                }
+            }
+        };
+    }
 
     /** X04: the jaudiotagger adapter package is only used by itself and by the composition root (app). */
     public static final ArchRule X04_JAUDIOTAGGER_ADAPTER_ONLY_USED_BY_APP = noClasses().that()

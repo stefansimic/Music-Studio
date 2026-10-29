@@ -44,4 +44,18 @@ class ArchitectureRulesSelfTest {
     void a11CatchesReflection() {
         assertViolated(ArchitectureRules.A11_NO_REFLECTION);
     }
+
+    @Test
+    void d02CatchesFilesAndRegex() {
+        assertViolated(ArchitectureRules.noWritePath("dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.."));
+    }
+
+    @Test
+    void d02CatchesRegexAlone() {
+        JavaClasses regexOnly = new ClassFileImporter().importClasses(
+                dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations.UsesRegex.class);
+        assertThatThrownBy(() -> ArchitectureRules.noWritePath(
+                "dev.rs.slava.icxc.musicstudio.core.testkit.arch.violations..").check(regexOnly))
+                .isInstanceOf(AssertionError.class);
+    }
 }

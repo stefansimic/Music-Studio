@@ -22,7 +22,9 @@ final class TestStudios {
     private TestStudios() {}
 
     static MusicStudio scanOnly(ScanMediaUseCase scan) {
-        return new MusicStudio(scan, new WriteOptionsUseCase() {
+        return new MusicStudio(scan, request -> {
+            throw new UnsupportedOperationException("not used by this test");
+        }, new WriteOptionsUseCase() {
             @Override
             public FormatCapabilities capabilities(MediaFormat format) {
                 throw new UnsupportedOperationException("not used by this test");

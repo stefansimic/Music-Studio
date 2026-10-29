@@ -2,6 +2,7 @@ package dev.rs.slava.icxc.musicstudio.app;
 
 import dev.rs.slava.icxc.musicstudio.core.contract.Require;
 import dev.rs.slava.icxc.musicstudio.core.export.WriteOptionsService;
+import dev.rs.slava.icxc.musicstudio.core.extract.ProposeMetadataService;
 import dev.rs.slava.icxc.musicstudio.core.export.WriteTagsService;
 import dev.rs.slava.icxc.musicstudio.core.scan.ScanMediaService;
 import dev.rs.slava.icxc.musicstudio.storage.LocalExportTarget;
@@ -30,7 +31,8 @@ public final class MusicStudioFactory {
         LocalMediaFileSource files = new LocalMediaFileSource();
         JaudiotaggerTagReader reader = new JaudiotaggerTagReader();
         JaudiotaggerTagWriter writer = new JaudiotaggerTagWriter();
-        return new MusicStudio(new ScanMediaService(files, reader), new WriteOptionsService(writer),
+        return new MusicStudio(new ScanMediaService(files, reader), new ProposeMetadataService(),
+                new WriteOptionsService(writer),
                 new WriteTagsService(files, reader, writer, new LocalExportTarget()));
     }
 }

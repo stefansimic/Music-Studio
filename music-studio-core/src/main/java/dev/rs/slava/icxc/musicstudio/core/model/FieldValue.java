@@ -64,12 +64,12 @@ public sealed interface FieldValue {
     /**
      * Track or disc position.
      *
-     * @param number 1..9999
+     * @param number 0..9999 (0 exists on albums with an intro track; a tag value of 0 is read as "not set", so after writing it is the same as no value)
      * @param total  1..9999 if present. {@code number > total} is allowed because real files contain it.
      */
     record Position(int number, OptionalInt total) implements FieldValue {
         public Position {
-            Require.inRange(number, 1, 9999, "number");
+            Require.inRange(number, 0, 9999, "number");
             Require.nonNull(total, "total");
             if (total.isPresent()) {
                 Require.inRange(total.getAsInt(), 1, 9999, "total");
