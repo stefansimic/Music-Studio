@@ -69,4 +69,34 @@ class Id3v1TextTest {
         assertThatThrownBy(() -> Id3v1Text.fit(null, true, 30)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> Id3v1Text.fit("a", true, 0)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void truncateKeepsAFittingTextUnchanged() {
+        assertThat(Id3v1Text.truncate("exactly ten", 11)).isEqualTo("exactly ten");
+        assertThat(Id3v1Text.truncate("", 5)).isEmpty();
+    }
+
+    @Test
+    void truncateCutsAtTheLastSpaceInsideTheLimit() {
+        assertThat(Id3v1Text.truncate("one two three", 10)).isEqualTo("one two");
+    }
+
+    @Test
+    void truncateCutsExactlyBeforeASpaceAtTheLimit() {
+        assertThat(Id3v1Text.truncate("one two three", 7)).isEqualTo("one two");
+    }
+
+    @Test
+    void truncateCutsHardInsideASingleLongWordAndNeverLeavesTrailingSpaces() {
+        assertThat(Id3v1Text.truncate("abcdefghijkl", 5)).isEqualTo("abcde");
+        assertThat(Id3v1Text.truncate("ab    cdefg", 6)).isEqualTo("ab");
+    }
+
+    @Test
+    void truncateChecksPreconditions() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> Id3v1Text.truncate(null, 5))
+                .isInstanceOf(NullPointerException.class);
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> Id3v1Text.truncate("a", 0))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

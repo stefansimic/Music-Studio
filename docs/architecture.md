@@ -662,6 +662,11 @@ jaudiotagger's `Tag`/`FieldKey` model.
 
 ### 6.4 `ExportTarget` (004) – full contract
 
+> **Status (story 003):** only a four-method subset exists so far: `exists`, `reserveTempPath`, `moveNoReplace` and
+> `deleteTemp` (`LocalExportTarget` in `music-studio-storage`). Temp names are `.<stem>.<random>.musicstudio-tmp<.ext>`
+> (`ExportTarget.TEMP_MARKER`, extension kept so a reader can verify the temp file); `deleteTemp` accepts only such names.
+> The contract below is the target state; story 004 adds the rest.
+
 ```java
 /**
  * Write side of the local filesystem, restricted to what a safe export needs. It cannot modify or delete arbitrary
@@ -701,7 +706,7 @@ public interface ExportTarget {
 
     /**
      * Returns a unique, not-yet-existing temp path in the same directory as {@code finalTarget}, named
-     * {@code ".<finalName>.<random>.musicstudio-tmp"}. Same directory ⇒ same filesystem ⇒ the later move is a rename.
+     * {@code ".<stem>.<random>.musicstudio-tmp<.ext>"}. Same directory ⇒ same filesystem ⇒ the later move is a rename.
      * <p><b>Preconditions:</b> finalTarget not null, absolute; parent exists.
      * <p><b>Postconditions:</b> the returned path does not exist; nothing is created.
      */
@@ -1256,7 +1261,7 @@ public interface PlayerUseCase {          // queue logic in core (PlaybackQueue)
 ### 8.2 Safe write per file (temp → verify → no-replace move)
 
 ```
-reserveTempPath(target)          ".Song.mp3.4f9a1c.musicstudio-tmp"  (same dir ⇒ same FS ⇒ rename)
+reserveTempPath(target)          ".Song.4f9a1c.musicstudio-tmp.mp3"  (same dir ⇒ same FS ⇒ rename)
 TagWriter.writeCopy(src, temp)   source opened read-only
 TagReader.read(temp)             WriteVerifier: v2 slot fields == expected (writable fields), v1 == Id3v1Values,
                                  versions == selected (+ kept other families)

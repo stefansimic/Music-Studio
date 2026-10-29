@@ -42,19 +42,35 @@ public final class Id3v1Text {
         Transliterator.Transliteration converted =
                 asciiOnly ? Transliterator.toAscii(value) : Transliterator.toLatin1(value);
         String text = converted.text().strip(); // a dropped character may leave a blank at either end
-        boolean truncated = false;
-        if (text.length() > maxBytes) {
-            truncated = true;
-            int cut = maxBytes;
-            if (text.charAt(maxBytes) != ' ') {
-                int space = text.lastIndexOf(' ', maxBytes - 1);
-                if (space > 0) {
-                    cut = space;
-                }
-            }
-            text = text.substring(0, cut).stripTrailing();
-        }
+        boolean truncated = text.length() > maxBytes;
+        text = truncate(text, maxBytes);
         assert text.length() <= maxBytes : "fitted text must not exceed the field size";
         return new FittedText(text, converted.changed(), truncated, converted.droppedChars());
+    }
+
+    /**
+     * Shortens a text to at most {@code maxBytes} characters, at the last space inside the limit when there is one,
+     * otherwise hard; trailing spaces are removed. A text that already fits is returned unchanged.
+     *
+     * @param text     text of single-byte characters; not null
+     * @param maxBytes limit, greater than 0
+     * @return the text, at most {@code maxBytes} long; never null
+     * @throws NullPointerException     if {@code text} is null
+     * @throws IllegalArgumentException if {@code maxBytes <= 0}
+     */
+    public static String truncate(String text, int maxBytes) {
+        Require.nonNull(text, "text");
+        Require.that(maxBytes > 0, "maxBytes must be > 0");
+        if (text.length() <= maxBytes) {
+            return text;
+        }
+        int cut = maxBytes;
+        if (text.charAt(maxBytes) != ' ') {
+            int space = text.lastIndexOf(' ', maxBytes - 1);
+            if (space > 0) {
+                cut = space;
+            }
+        }
+        return text.substring(0, cut).stripTrailing();
     }
 }

@@ -65,6 +65,8 @@
               <buildArgs>
                 <buildArg>-march=compatibility</buildArg>
                 <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+                <!-- Windows-1251/1253 (ID3v1 codepage policy) live in jdk.charsets, not in the default image -->
+                <buildArg>-H:+AddAllCharsets</buildArg>
               </buildArgs>
               <agent><enabled>false</enabled></agent>
             </configuration>

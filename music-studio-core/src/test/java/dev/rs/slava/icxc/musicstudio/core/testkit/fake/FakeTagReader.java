@@ -35,6 +35,15 @@ public final class FakeTagReader implements TagReader {
 
     private final Map<Path, Outcome> registered = new ConcurrentHashMap<>();
     private final AtomicLong readCount = new AtomicLong();
+    private volatile boolean acceptTempNames;
+
+    /**
+     * Also accept names ending in {@code .musicstudio-tmp} (the real readers reject them: their name has no
+     * media extension). Only {@link FakeStudio} switches this on, to test the use case independently of that.
+     */
+    public void acceptTempNames(boolean accept) {
+        this.acceptTempNames = accept;
+    }
 
     /** Makes {@code file} read as {@code result}. */
     public void register(Path file, TagReadResult result) {
@@ -59,7 +68,9 @@ public final class FakeTagReader implements TagReader {
     @Override
     public TagReadResult read(Path file) throws MediaAccessException {
         Require.absolute(file, "file");
-        Require.that(MediaFormat.ofFileName(file.getFileName().toString()).filter(readableFormats()::contains)
+        String name = file.getFileName().toString();
+        boolean temp = acceptTempNames && name.endsWith(dev.rs.slava.icxc.musicstudio.core.port.ExportTarget.TEMP_MARKER);
+        Require.that(temp || MediaFormat.ofFileName(name).filter(readableFormats()::contains)
                 .isPresent(), "unsupported file type: %s", file);
         readCount.incrementAndGet();
         Outcome outcome = registered.get(file);

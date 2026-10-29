@@ -62,4 +62,44 @@ class TransliteratorTest {
         assertThatThrownBy(() -> Transliterator.toAscii(null)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> Transliterator.toLatin1(null)).isInstanceOf(NullPointerException.class);
     }
+
+    @ParameterizedTest
+    @CsvSource({
+        "Μίκης Θεοδωράκης, Mikis Theodorakis",
+        "Νίκος Βέρτης, Nikos Vertis",
+        "Ελευθερία Αρβανιτάκη, Eleftheria Arvanitaki",
+        "Αλέξης, Alexis",
+        "ψυχή, psychi",
+        "Ουρανός, Ouranos",
+        "σας, sas",
+        "Ναΐφ, Naif"
+    })
+    void greekFollowsElot743StyleAndDropsTonosAndFinalSigma(String input, String expected) {
+        Transliterator.Transliteration t = Transliterator.toAscii(input);
+        assertThat(t.text()).isEqualTo(expected);
+        assertThat(t.changed()).isTrue();
+        assertThat(t.droppedChars()).isFalse();
+        assertThat(t.text()).doesNotContain("?");
+    }
+
+    @Test
+    void completeSerbianCyrillicSpecialLettersIncludingJLjNjCDzDj() {
+        assertThat(Transliterator.toAscii("ЉЊЏЂЋЈ").text()).isEqualTo("LjNjDzDjCJ");
+        assertThat(Transliterator.toAscii("љњџђћј").text()).isEqualTo("ljnjdzdjcj");
+    }
+
+    @Test
+    void wholeSerbianCyrillicAlphabetProducesNonEmptyAsciiWithoutDrops() {
+        String alphabet = "АБВГДЂЕЖЗИЈКЛЉМНЊОПРСТЋУФХЦЧЏШабвгдђежзијклљмнњопрстћуфхцчџш";
+        Transliterator.Transliteration t = Transliterator.toAscii(alphabet);
+        assertThat(t.droppedChars()).isFalse();
+        assertThat(t.text()).isNotEmpty().matches("[\\x20-\\x7E]+");
+    }
+
+    @Test
+    void emojiAndCjkAreDroppedNeverQuestionMark() {
+        Transliterator.Transliteration t = Transliterator.toAscii("Song 🎵 日本");
+        assertThat(t.droppedChars()).isTrue();
+        assertThat(t.text()).doesNotContain("?").contains("Song");
+    }
 }

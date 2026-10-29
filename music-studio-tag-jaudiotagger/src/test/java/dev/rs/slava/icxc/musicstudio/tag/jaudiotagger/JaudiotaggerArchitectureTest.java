@@ -21,4 +21,7 @@ class JaudiotaggerArchitectureTest {
 
     @ArchTest
     static final ArchRule a11 = ArchitectureRules.A11_NO_REFLECTION;
+
+    @ArchTest
+    static final ArchRule d09 = ArchitectureRules.D09_ADAPTER_INTERNALS_ARE_PACKAGE_PRIVATE;
 }

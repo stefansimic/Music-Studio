@@ -82,7 +82,7 @@ class ScanEndToEndTest {
         List<String> shownNames = rows.stream().map(line -> line.substring(0, line.indexOf(".mp3") + 4).strip())
                 .filter(name -> !name.startsWith("Skipped")).toList();
         assertThat(shownNames.subList(0, expectedMp3Names().size())).containsExactlyElementsOf(expectedMp3Names());
-        assertThat(table).contains("16 files found").contains("14 read").contains("2 unreadable")
+        assertThat(table).contains("20 files found").contains("18 read").contains("2 unreadable")
                 .contains("2 ignored (jpg: 1, txt: 1)");
         assertThat(table).contains("Skipped (not scanned):").contains("hidden  ._v1_0.mp3").contains("hidden  .cache");
         assertThat(rows).filteredOn(line -> line.startsWith("corrupt.mp3") || line.startsWith("empty.mp3"))
@@ -131,7 +131,7 @@ class ScanEndToEndTest {
         run("scan", music.toString(), "--format", "json", "--recursive");
         String json = out.toString();
         JsonSyntax.assertValid(json);
-        assertThat(json).contains("\"found\": 16").contains("\"read\": 14").contains("\"failed\": 2")
+        assertThat(json).contains("\"found\": 20").contains("\"read\": 18").contains("\"failed\": 2")
                 .contains("\"ignoredByExtension\": {\"jpg\": 1, \"txt\": 1}")
                 .contains("\"reason\": \"HIDDEN\"").contains("\"status\": \"error\"")
                 .contains("\"version\": \"ID3v1.1\"").contains("\"version\": \"ID3v2.3\"")
@@ -143,10 +143,10 @@ class ScanEndToEndTest {
     void csvIsOneRowPerMp3AndStdoutStaysClean() {
         run("scan", music.toString(), "--format", "csv");
         List<String> lines = out.toString().lines().toList();
-        assertThat(lines).hasSize(1 + 16);
+        assertThat(lines).hasSize(1 + 20);
         assertThat(lines.get(0)).startsWith("path,title");
         assertThat(out.toString()).doesNotContain("skipped");
-        assertThat(err.toString()).contains("skipped: hidden").contains("completed: 16 found, 14 read, 2 unreadable");
+        assertThat(err.toString()).contains("skipped: hidden").contains("completed: 20 found, 18 read, 2 unreadable");
     }
 
     @Test
@@ -169,6 +169,6 @@ class ScanEndToEndTest {
 
     @Test
     void theListOfExpectedNamesIsComplete() {
-        assertThat(new ArrayList<>(expectedMp3Names())).hasSize(16);
+        assertThat(new ArrayList<>(expectedMp3Names())).hasSize(20);
     }
 }

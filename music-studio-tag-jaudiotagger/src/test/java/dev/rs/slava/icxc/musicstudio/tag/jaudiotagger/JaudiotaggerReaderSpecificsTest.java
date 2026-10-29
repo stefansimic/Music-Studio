@@ -112,4 +112,43 @@ class JaudiotaggerReaderSpecificsTest {
             reader.read(garbage);
         }).isInstanceOf(MediaAccessException.class);
     }
+
+    /** Hand-built ID3v2.3 tag with one TCON frame (Latin-1) in front of the fixture audio. */
+    private Path v23WithGenre(String genreText) throws IOException {
+        byte[] text = genreText.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
+        int frameLen = 1 + text.length;
+        ByteArrayOutputStream tag = new ByteArrayOutputStream();
+        tag.writeBytes("TCON".getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
+        tag.writeBytes(new byte[] {0, 0, (byte) (frameLen >> 8), (byte) frameLen, 0, 0, 0});
+        tag.writeBytes(text);
+        byte[] body = tag.toByteArray();
+        ByteArrayOutputStream file = new ByteArrayOutputStream();
+        file.writeBytes(new byte[] {'I', 'D', '3', 3, 0, 0, 0, 0, (byte) (body.length >> 7), (byte) (body.length & 0x7F)});
+        file.writeBytes(body);
+        file.writeBytes(Fixtures.bytes(Fixture.NO_TAGS));
+        Path path = tempDir.resolve("genre-" + Math.abs(genreText.hashCode()) + ".mp3");
+        Files.write(path, file.toByteArray());
+        return path;
+    }
+
+    @Test
+    void semicolonJoinedGenresOfV23BecomeSeparateGenres() throws Exception {
+        TagReadResult result = reader.read(v23WithGenre("Rock; Pop"));
+        assertThat(result.effective().get(Field.GENRE).orElseThrow()).isEqualTo(
+                new dev.rs.slava.icxc.musicstudio.core.model.FieldValue.Genres(java.util.List.of(
+                        new dev.rs.slava.icxc.musicstudio.core.model.Genre("Rock"),
+                        new dev.rs.slava.icxc.musicstudio.core.model.Genre("Pop"))));
+    }
+
+    @Test
+    void semicolonWithoutSpacesAndDuplicatesAreHandled() throws Exception {
+        TagReadResult result = reader.read(v23WithGenre("Rock;Pop; rock ;Jazz"));
+        assertThat(result.effective().display(Field.GENRE)).contains("Rock; Pop; Jazz");
+    }
+
+    @Test
+    void trailingSemicolonDoesNotCreateAnEmptyGenre() throws Exception {
+        TagReadResult result = reader.read(v23WithGenre("Rock;"));
+        assertThat(result.effective().display(Field.GENRE)).contains("Rock");
+    }
 }

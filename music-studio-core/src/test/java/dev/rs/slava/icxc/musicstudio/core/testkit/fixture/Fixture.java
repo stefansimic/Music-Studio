@@ -1,6 +1,6 @@
 package dev.rs.slava.icxc.musicstudio.core.testkit.fixture;
 
-/** The MP3 fixture files under {@code /fixtures/mp3}. Content is documented in {@code generate_fixtures.py}. */
+/** The MP3 fixture files under {@code /fixtures/mp3}. Content is documented in {@code generate_fixtures.py} and {@code generate_write_fixtures.py}. */
 public enum Fixture {
     NO_TAGS("no-tags.mp3"),
     V1_0("v1_0.mp3"),
@@ -16,6 +16,10 @@ public enum Fixture {
     V23_BAD_TRACK("v23-bad-track.mp3"),
     V23_COVER("v23-cover.mp3"),
     V23_OTHER_PICTURE("v23-other-picture.mp3"),
+    V23_EXTRAS("v23-extras.mp3"),
+    V24_EXTRAS("v24-extras.mp3"),
+    V23_UTF16_GREEK("v23-utf16-greek.mp3"),
+    V24_UTF8_GREEK_CYRILLIC("v24-utf8-greek-cyrillic.mp3"),
     CORRUPT("corrupt.mp3"),
     EMPTY("empty.mp3");
 

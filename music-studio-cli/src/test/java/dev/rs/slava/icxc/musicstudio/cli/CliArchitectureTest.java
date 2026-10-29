@@ -21,4 +21,7 @@ class CliArchitectureTest {
 
     @ArchTest
     static final ArchRule a11 = ArchitectureRules.A11_NO_REFLECTION;
+
+    @ArchTest
+    static final ArchRule x04 = ArchitectureRules.X04_JAUDIOTAGGER_ADAPTER_ONLY_USED_BY_APP;
 }

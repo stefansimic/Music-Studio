@@ -69,6 +69,6 @@ class MusicStudioFactoryTest {
     @Test
     void preconditions() {
         assertThatThrownBy(() -> new MusicStudioFactory(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new MusicStudio(null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new MusicStudio(null, null, null)).isInstanceOf(NullPointerException.class);
     }
 }

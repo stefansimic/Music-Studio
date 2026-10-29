@@ -287,10 +287,12 @@ final class Id3Reading {
     private static void putGenres(Map<Field, FieldValue> values, List<String> rawParts) {
         Set<String> seen = new LinkedHashSet<>();
         List<Genre> genres = new ArrayList<>();
-        for (String part : rawParts) {
-            for (Genre genre : Id3v1Genres.resolveReference(part).orElse(List.of())) {
-                if (seen.add(genre.name().toLowerCase(java.util.Locale.ROOT))) {
-                    genres.add(genre);
+        for (String raw : rawParts) {
+            for (String part : raw.split("\\s*;\\s*")) { // "A; B" is how ID3v2.2/2.3 hold several genres
+                for (Genre genre : Id3v1Genres.resolveReference(part).orElse(List.of())) {
+                    if (seen.add(genre.name().toLowerCase(java.util.Locale.ROOT))) {
+                        genres.add(genre);
+                    }
                 }
             }
         }

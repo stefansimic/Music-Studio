@@ -100,6 +100,23 @@ public final class FixtureCatalog {
         EXPECTATIONS.put(Fixture.V23_OTHER_PICTURE, new Expectation.Readable(result(
                 List.of(layer(TagVersion.ID3V2_3, meta(Field.TITLE, text("Other Picture")))),
                 Optional.of(new CoverInfo(PictureType.OTHER, "image/jpeg", COVER_SIZE_BYTES)), List.of())));
+        EXPECTATIONS.put(Fixture.V23_EXTRAS, new Expectation.Readable(result(
+                List.of(layer(TagVersion.ID3V2_3, meta(
+                        Field.TITLE, text("Extras Title"), Field.ARTIST, text("Extras Artist"),
+                        Field.ALBUM, text("Extras Album"), Field.YEAR, year(2011), Field.TRACK, position(2, 9)))),
+                Optional.of(new CoverInfo(PictureType.FRONT_COVER, "image/jpeg", COVER_SIZE_BYTES)), List.of())));
+        EXPECTATIONS.put(Fixture.V24_EXTRAS, new Expectation.Readable(result(
+                List.of(layer(TagVersion.ID3V2_4, meta(
+                        Field.TITLE, text("Extras Title"), Field.ARTIST, text("Extras Artist"),
+                        Field.ALBUM, text("Extras Album"), Field.YEAR, year(2011), Field.TRACK, position(2, 9)))),
+                Optional.of(new CoverInfo(PictureType.FRONT_COVER, "image/jpeg", COVER_SIZE_BYTES)), List.of())));
+        EXPECTATIONS.put(Fixture.V23_UTF16_GREEK, readable(layer(TagVersion.ID3V2_3, meta(
+                Field.TITLE, text("Ελευθερία Αρβανιτάκη"), Field.ARTIST, text("Μίκης Θεοδωράκης"),
+                Field.ALBUM, text("Νίκος Βέρτης"), Field.YEAR, year(2008), Field.TRACK, position(3, 10)))));
+        EXPECTATIONS.put(Fixture.V24_UTF8_GREEK_CYRILLIC, readable(layer(TagVersion.ID3V2_4, meta(
+                Field.TITLE, text("Ελευθερία Αρβανιτάκη"), Field.ARTIST, text("Ђорђе Балашевић"),
+                Field.ALBUM_ARTIST, text("Μίκης Θεοδωράκης"), Field.ALBUM, text("ЉЊЏЂЋЈ љњџђћј čćšžđ"),
+                Field.YEAR, year(2015), Field.TRACK, position(4, 12), Field.GENRE, genres("Rock", "Pop")))));
         EXPECTATIONS.put(Fixture.CORRUPT, new Expectation.Unreadable(MediaAccessException.Reason.CORRUPT));
         EXPECTATIONS.put(Fixture.EMPTY, new Expectation.Unreadable(MediaAccessException.Reason.CORRUPT));
         for (Fixture fixture : Fixture.values()) {

@@ -52,11 +52,16 @@ Fixed 128-byte block `TAG` + fields — the domain values must be **derived** fo
 | genre | 1 byte | index into the ID3v1/Winamp table; map our genre via the alias map, unknown → 12 (Other) |
 No album artist, disc number, cover art or multi-value fields exist in v1.
 
-**Text must be ASCII-safe**: v1 is nominally Latin-1, but many old head units only display ASCII and Serbian/Croatian
+**Greek and Serbian Cyrillic stay in their script** (user decision): v2 always keeps the original (UTF-16 / UTF-8).
+v1 has no encoding marker, so the write option `V1NonLatinPolicy` (set per device profile) picks: `SKIP_V1` (default, v2
+only + warning), `CODEPAGE` (Windows-1253 Greek / Windows-1251 Cyrillic, one codepage per file; only right on devices
+set to that locale), or `TRANSLITERATE` (Latin; Greek ELOT 743 style ου→ou, θ→th, χ→ch, ψ→ps, tonos stripped).
+
+**Text must be ASCII-safe** (for Latin-script text, and for `TRANSLITERATE`): v1 is nominally Latin-1, but many old head units only display ASCII and Serbian/Croatian
 letters (č ć š ž đ) aren't Latin-1 anyway. Apply a project-owned transliteration before writing v1:
 - Serbian Cyrillic → Latin (Gaj): А→A … Ђ→Đ, Љ→Lj, Њ→Nj, Џ→Dž, Ћ→Ć, Ч→Č, Ш→Š, Ж→Ž, …
 - then Latin → ASCII: č/ć→c, š→s, ž→z, đ→dj, dž→dz, ä→ae, ö→oe, ü→ue, ß→ss, other accents stripped (NFD + remove marks)
-- remaining unmappable chars → `?` is forbidden; drop them and report a warning.
+- remaining unmappable chars (emoji, CJK) → `?` is forbidden; drop them and report a warning.
 The v1 strategy (ASCII vs. Latin-1) is part of the device profile. The same transliteration is reused for
 FAT32-safe filenames when a profile asks for ASCII filenames.
 

@@ -46,7 +46,7 @@ class ScanCommandTest {
             requests.add(request);
             return result;
         };
-        return MusicStudioCommand.create(new MusicStudio(fake), cancel, new PrintWriter(out), new PrintWriter(err))
+        return MusicStudioCommand.create(TestStudios.scanOnly(fake), cancel, new PrintWriter(out), new PrintWriter(err))
                 .execute(args);
     }
 
@@ -143,7 +143,7 @@ class ScanCommandTest {
             seen.add(token);
             return result;
         };
-        MusicStudioCommand.create(new MusicStudio(fake), cancel, new PrintWriter(out), new PrintWriter(err))
+        MusicStudioCommand.create(TestStudios.scanOnly(fake), cancel, new PrintWriter(out), new PrintWriter(err))
                 .execute("scan", "/music");
         assertThat(seen).containsExactly(cancel);
     }
@@ -153,7 +153,7 @@ class ScanCommandTest {
         ScanMediaUseCase failing = (request, sink, progress, token) -> {
             throw new IllegalStateException("boom");
         };
-        int code = MusicStudioCommand.create(new MusicStudio(failing), Cancellation.NONE, new PrintWriter(out),
+        int code = MusicStudioCommand.create(TestStudios.scanOnly(failing), Cancellation.NONE, new PrintWriter(out),
                 new PrintWriter(err)).execute("scan", "/music");
         assertThat(code).isEqualTo(ExitCode.ABORTED);
         assertThat(err.toString()).contains("error:").contains("boom");
@@ -184,7 +184,7 @@ class ScanCommandTest {
     @Test
     void preconditions() {
         PrintWriter writer = new PrintWriter(out);
-        MusicStudio studio = new MusicStudio((request, sink, progress, token) -> result);
+        MusicStudio studio = TestStudios.scanOnly((request, sink, progress, token) -> result);
         assertThatThrownBy(() -> MusicStudioCommand.create(null, Cancellation.NONE, writer, writer))
                 .isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> MusicStudioCommand.create(studio, null, writer, writer))

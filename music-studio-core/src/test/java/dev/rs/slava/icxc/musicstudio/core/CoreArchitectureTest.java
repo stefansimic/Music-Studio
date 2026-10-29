@@ -36,4 +36,7 @@ class CoreArchitectureTest {
 
     @ArchTest
     static final ArchRule a11 = ArchitectureRules.A11_NO_REFLECTION;
+
+    @ArchTest
+    static final ArchRule x04Export = ArchitectureRules.X04_EXPORT_DEPENDS_ONLY_ON_LOWER_LAYERS;
 }

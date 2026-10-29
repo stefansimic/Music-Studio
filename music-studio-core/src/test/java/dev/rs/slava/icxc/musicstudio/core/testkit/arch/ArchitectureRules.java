@@ -139,6 +139,28 @@ public final class ArchitectureRules {
                     .should().dependOnClassesThat().resideInAnyPackage("jakarta.json..", "org.eclipse.parsson..")
                     .allowEmptyShould(true));
 
+    /** X04: the export package (write use cases) depends only on contract, model, port, task, text and tag. */
+    public static final ArchRule X04_EXPORT_DEPENDS_ONLY_ON_LOWER_LAYERS = classes().that()
+            .resideInAPackage(ROOT + ".core.export..")
+            .should().onlyDependOnClassesThat().resideInAnyPackage(ROOT + ".core.export..",
+                    ROOT + ".core.contract..", ROOT + ".core.model..", ROOT + ".core.port..",
+                    ROOT + ".core.task..", ROOT + ".core.text..", ROOT + ".core.tag..", "java.lang",
+                    "java.lang.annotation", "java.lang.invoke", "java.lang.runtime", "java.util..", "java.time..",
+                    "java.nio.file")
+            .allowEmptyShould(true);
+
+    /** X04: the jaudiotagger adapter package is only used by itself and by the composition root (app). */
+    public static final ArchRule X04_JAUDIOTAGGER_ADAPTER_ONLY_USED_BY_APP = noClasses().that()
+            .resideOutsideOfPackages(ROOT + ".tag.jaudiotagger..", ROOT + ".app..")
+            .should().dependOnClassesThat().resideInAPackage(ROOT + ".tag.jaudiotagger..")
+            .allowEmptyShould(true);
+
+    /** D09: of the adapter package only the port implementations are public; helpers are package-private. */
+    public static final ArchRule D09_ADAPTER_INTERNALS_ARE_PACKAGE_PRIVATE = classes().that()
+            .resideInAPackage(ROOT + ".tag.jaudiotagger..").and().arePublic()
+            .should().haveSimpleName("JaudiotaggerTagReader").orShould().haveSimpleName("JaudiotaggerTagWriter")
+            .allowEmptyShould(true);
+
     /** A11: no reflection and no dynamic class loading in our code (native-image friendliness). */
     public static final ArchRule A11_NO_REFLECTION = noClasses().that().resideInAPackage(ROOT + "..")
             .should().dependOnClassesThat().resideInAPackage("java.lang.reflect..")

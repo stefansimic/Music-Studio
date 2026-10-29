@@ -79,6 +79,15 @@ public final class InMemoryMediaFileSource implements MediaFileSource {
         nodes.get(directory).denied = denied;
     }
 
+    /** Removes a file (simulates a file that disappears). */
+    public synchronized void remove(Path path) {
+        nodes.remove(path);
+        Path parent = path.getParent();
+        if (parent != null && nodes.containsKey(parent)) {
+            nodes.get(parent).children.remove(path);
+        }
+    }
+
     private void add(Path path, Node node) {
         Require.absolute(path, "path");
         Path parent = path.getParent();
