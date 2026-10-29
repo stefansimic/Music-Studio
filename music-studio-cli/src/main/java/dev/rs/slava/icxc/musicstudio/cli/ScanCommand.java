@@ -55,7 +55,7 @@ public final class ScanCommand implements Callable<Integer> {
     private boolean strictV1Compare;
 
     @Option(names = {"-f", "--format"}, defaultValue = "table", paramLabel = "<format>",
-            description = "Output format: CANDIDATES (default: VALUE).")
+            description = "Output format: table, json or csv (default: ${DEFAULT-VALUE}).")
     private OutputFormat format;
 
     private final ScanMediaUseCase scan;

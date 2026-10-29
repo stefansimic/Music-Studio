@@ -16,7 +16,8 @@ public sealed interface FieldValue {
     String display();
 
     /**
-     * Text value.
+     * Text value. Lossy for multi-valued frames: several values are merged into one display string and exact
+     * duplicates are dropped, so it must not be written back to a tag as-is.
      *
      * @param value stripped, not empty, without U+0000. Line breaks are only allowed for multi-line fields; that is
      *              checked by {@link MediaMetadata}.

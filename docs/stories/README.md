@@ -6,7 +6,7 @@ defined structure — plus a music player with a library.
 
 | # | Story | Depends on | Status |
 |---|---|---|---|
-| 001 | [Scan a folder and read tags](001-scan-and-read-tags.md) | – | open |
+| 001 | [Scan a folder and read tags](001-scan-and-read-tags.md) | – | done |
 | 002 | [Extract metadata from file and folder names](002-extract-metadata-from-names.md) | 001 | open |
 | 003 | [Write tags with selectable ID3 versions](003-write-tags-with-version-selection.md) | 001 | open |
 | 004 | [Export into a defined output structure](004-export-to-output-structure.md) | 002, 003 | open |

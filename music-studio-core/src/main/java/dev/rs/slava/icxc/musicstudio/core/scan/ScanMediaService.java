@@ -119,6 +119,14 @@ public final class ScanMediaService implements ScanMediaUseCase {
         } catch (MediaAccessException e) {
             Issue error = Issue.error(IssueCode.READ_FAILED, e.reason() + ": " + e.getMessage()).forFile(file);
             return new UnreadableFile(file, format, error);
+        } catch (OperationCancelledException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            // a TagReader must map every failure to MediaAccessException; if one does not, one bad file must
+            // still not abort the scan after items were already delivered
+            Issue error = Issue.error(IssueCode.READ_FAILED,
+                    "UNEXPECTED: " + e.getClass().getSimpleName() + ": " + e.getMessage()).forFile(file);
+            return new UnreadableFile(file, format, error);
         }
     }
 

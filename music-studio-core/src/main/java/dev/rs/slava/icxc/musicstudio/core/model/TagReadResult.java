@@ -13,6 +13,11 @@ import java.util.Set;
 /**
  * Everything a {@code TagReader} found in one file.
  *
+ * <p><b>Read-only view:</b> the values are for display and comparison, not for writing back. A multi-valued frame
+ * (for example several artists) is merged into one display value, and an unreadable ID3v2 tag yields no v2 layer
+ * together with a {@code TAG_DAMAGED} issue. "No v2 layer" therefore never means "no v2 data"; a writer must not
+ * derive tag content from this record alone.
+ *
  * @param format  not null
  * @param layers  at most one layer per {@link TagFamily}, sorted by family order, every version belongs to a family
  *                valid for {@code format}; empty for a file without tags

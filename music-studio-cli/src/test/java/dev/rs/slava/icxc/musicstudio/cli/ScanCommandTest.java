@@ -170,6 +170,8 @@ class ScanCommandTest {
         assertThat(run("scan", "--help")).isEqualTo(ExitCode.OK);
         assertThat(out.toString()).contains("--recursive").contains("--include-hidden").contains("--strict-v1-compare")
                 .contains("--format").contains("Exit codes");
+        assertThat(out.toString()).contains("table, json or csv").contains("default: table")
+                .doesNotContain("CANDIDATES").doesNotContain("default: VALUE");
         assertThat(requests).isEmpty();
     }
 

@@ -4,6 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import dev.rs.slava.icxc.musicstudio.core.model.Field;
+import dev.rs.slava.icxc.musicstudio.core.port.TagReader;
+import dev.rs.slava.icxc.musicstudio.core.port.MediaAccessException;
+import dev.rs.slava.icxc.musicstudio.core.model.TagReadResult;
+import dev.rs.slava.icxc.musicstudio.core.model.MediaFormat;
 import dev.rs.slava.icxc.musicstudio.core.model.IssueCode;
 import dev.rs.slava.icxc.musicstudio.core.model.PathOrder;
 import dev.rs.slava.icxc.musicstudio.core.model.V1Comparison;
@@ -90,6 +94,37 @@ class ScanMediaServiceTest {
         });
         assertThat(items.get(2)).isInstanceOf(ScannedFile.class);
         assertThat(summary.found()).isEqualTo(3);
+        assertThat(summary.read()).isEqualTo(2);
+        assertThat(summary.failed()).isEqualTo(1);
+        assertThat(summary.status()).isEqualTo(ScanStatus.COMPLETED);
+    }
+
+    @Test
+    void unexpectedReaderExceptionMakesOneFileUnreadableNotTheWholeScan() {
+        addNoTags("a.mp3");
+        Path boom = addNoTags("b.mp3");
+        addNoTags("c.mp3");
+        TagReader throwing = new TagReader() {
+            @Override
+            public Set<MediaFormat> readableFormats() {
+                return reader.readableFormats();
+            }
+
+            @Override
+            public TagReadResult read(Path file) throws MediaAccessException {
+                if (file.equals(boom)) {
+                    throw new IllegalStateException("library bug");
+                }
+                return reader.read(file);
+            }
+        };
+        ScanSummary summary = new ScanMediaService(files, throwing)
+                .scan(ScanRequest.of(ROOT), items::add, ProgressListener.NONE, Cancellation.NONE);
+        assertThat(items).hasSize(3);
+        assertThat(items.get(1)).isInstanceOfSatisfying(UnreadableFile.class, unreadable -> {
+            assertThat(unreadable.error().code()).isEqualTo(IssueCode.READ_FAILED);
+            assertThat(unreadable.error().message()).contains("UNEXPECTED").contains("library bug");
+        });
         assertThat(summary.read()).isEqualTo(2);
         assertThat(summary.failed()).isEqualTo(1);
         assertThat(summary.status()).isEqualTo(ScanStatus.COMPLETED);

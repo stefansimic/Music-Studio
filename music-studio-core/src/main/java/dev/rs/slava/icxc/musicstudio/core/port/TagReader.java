@@ -49,7 +49,8 @@ public interface TagReader {
      *       loaded.</li>
      *   <li>Fields the format has no slot for are simply absent.</li>
      * </ul>
-     * <p><b>On failure:</b> the file is unchanged.
+     * <p><b>On failure:</b> the file is unchanged. Implementations must report every failure as a
+     * {@link MediaAccessException}; they must not let library or runtime exceptions escape.
      *
      * @param file absolute path of the file to read; not null
      * @return the read result; never null
